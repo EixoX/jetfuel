@@ -1,0 +1,16 @@
+package com.eixox.data.text;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.FIELD, ElementType.METHOD })
+public @interface FixedLength {
+
+	public int start();
+
+	public int end();
+
+}
