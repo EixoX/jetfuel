@@ -97,7 +97,7 @@ Or simply right click on the project name -> Maven -> Add Dependency and every d
 
 I use and recommend the WTP eclipse extensions. The server plugin detects changes in files and automatically reloads the application, making this the ideal platform for developing the api.
 
-# jetfuel-aws-lambda
+## jetfuel-aws-lambda
 
 > Ready to run your awesome usecases serverless on amazon lambda?
 
