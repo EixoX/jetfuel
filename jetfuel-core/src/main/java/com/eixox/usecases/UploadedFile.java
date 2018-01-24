@@ -13,7 +13,7 @@ import javax.servlet.http.Part;
  * @author Rodrigo Portela
  *
  */
-public class UploadedFile {
+public class UploadedFile implements BlobSource {
 
 	private final Part part;
 

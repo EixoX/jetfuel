@@ -52,8 +52,8 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 			throws Exception;
 
 	/**
-	 * Indicates that a given field is decoratable (default = is public AND is
-	 * not static AND is not transient);
+	 * Indicates that a given field is decoratable (default = is public AND is not
+	 * static AND is not transient);
 	 * 
 	 * @param field
 	 * @return
@@ -85,7 +85,8 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 						if (child != null)
 							members.add(child);
 					} catch (Exception ex) {
-						throw new RuntimeException("Trouble decorating " + fields[i].getName() + " in class " + dataType, ex);
+						throw new RuntimeException(
+								"Trouble decorating " + fields[i].getName() + " in class " + dataType, ex);
 					}
 			}
 		}
@@ -255,4 +256,30 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 		return this.members.size();
 	}
 
+	/**
+	 * Gets specific fields from a data type.
+	 * 
+	 * @param dataType
+	 * @param ignoreMissingFields
+	 * @param fieldNames
+	 * @return
+	 */
+	public static synchronized Field[] getFields(Class<?> dataType, boolean ignoreMissingFields, String... fieldNames) {
+
+		Field[] actualFields = dataType.getFields();
+		Field[] foundFields = new Field[fieldNames.length];
+
+		for (int i = 0; i < fieldNames.length; i++) {
+			for (int j = 0; j < actualFields.length; j++) {
+				if (fieldNames[i].equalsIgnoreCase(actualFields[j].getName())) {
+					foundFields[i] = actualFields[j];
+					break;
+				}
+			}
+			if (ignoreMissingFields == false && foundFields[i] == null)
+				throw new RuntimeException(fieldNames[i] + " is not a field on " + dataType);
+		}
+
+		return foundFields;
+	}
 }
