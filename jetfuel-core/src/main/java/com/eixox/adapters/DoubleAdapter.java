@@ -26,7 +26,7 @@ public class DoubleAdapter extends Adapter<Double> {
 	public Double parse(String source) {
 		return source == null || source.isEmpty() ?
 				whenNull() :
-				new Double(source);
+				Double.valueOf(source);
 	}
 
 	/**

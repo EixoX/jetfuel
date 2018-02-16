@@ -24,9 +24,9 @@ public class IntegerAdapter extends Adapter<Integer> {
 	 */
 	@Override
 	public Integer parse(String source) {
-		return source == null || source.isEmpty()
-				? whenNull()
-				: new Integer(source);
+		return source == null || source.isEmpty() ?
+				whenNull() :
+				Integer.valueOf(source);
 	}
 
 	/**

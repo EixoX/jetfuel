@@ -54,7 +54,7 @@ public class XmlListAdapter<T> implements XmlAdapter<List<T>> {
 	 */
 	public List<T> parse(Node node) {
 		try {
-			List<T> list = (List<T>) listType.newInstance();
+			List<T> list = (List<T>) listType.getConstructor().newInstance();
 			for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling())
 				if (child.getNodeType() == Node.ELEMENT_NODE && xmlName.equalsIgnoreCase(child.getNodeName())) {
 					T item = xmlAdapter.parse(child);

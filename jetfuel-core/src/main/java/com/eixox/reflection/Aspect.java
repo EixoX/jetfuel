@@ -234,7 +234,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 */
 	public final T newInstance() {
 		try {
-			return this.dataType.newInstance();
+			return this.dataType.getConstructor().newInstance();
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}

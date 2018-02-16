@@ -69,8 +69,8 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 	}
 
 	/**
-	 * Runs the usecase from the path info of the request, parsing the
-	 * parameters or json body and writes the execution result to the response;
+	 * Runs the usecase from the path info of the request, parsing the parameters or
+	 * json body and writes the execution result to the response;
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -80,7 +80,7 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			// Locates a usecase by name from the path info;
 			String usecaseName = this.package_name + request.getPathInfo().replace('/', '.');
 			Class<?> usecaseClass = Class.forName(usecaseName);
-			Object usecase = usecaseClass.newInstance();
+			Object usecase = usecaseClass.getConstructor().newInstance();
 			this.usecase = (UsecaseImplementation<TParams, TResult>) usecase;
 
 		} catch (ClassNotFoundException e) {
@@ -94,7 +94,8 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 		} catch (InstantiationException e) {
 			// Sends a 404 - not found if the usecase can't be instantiated;
 			try {
-				response.sendError(404, "Usecase can't be instantiated: " + request.getPathInfo() + " (" + e.getMessage() + ")");
+				response.sendError(404,
+						"Usecase can't be instantiated: " + request.getPathInfo() + " (" + e.getMessage() + ")");
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -102,7 +103,8 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 		} catch (IllegalAccessException e) {
 			// Sends a 404 - not found if the usecase can't be instantiated;
 			try {
-				response.sendError(404, "Usecase can't be instantiated: " + request.getPathInfo() + " (" + e.getMessage() + ")");
+				response.sendError(404,
+						"Usecase can't be instantiated: " + request.getPathInfo() + " (" + e.getMessage() + ")");
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -112,7 +114,8 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			// usecase implementation or in any other exception;
 			try {
 				response.sendError(404,
-						"Usecase is not a correct UsecaseImplementation: " + request.getPathInfo() + " (" + e.getMessage() + ")");
+						"Usecase is not a correct UsecaseImplementation: " + request.getPathInfo() + " ("
+								+ e.getMessage() + ")");
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -173,6 +176,11 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			UsecaseResultWriter resultWriter = usecase.getResultWriter(this.result);
 			if (resultWriter != null) {
 				try {
+					String contentDisposition = resultWriter.getContentDisposition();
+					if (contentDisposition != null && !contentDisposition.isEmpty()) {
+						response.setHeader("Content-Disposition", contentDisposition);
+					}
+					response.setContentType(resultWriter.getContentType());
 					resultWriter.write(response.getOutputStream());
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -206,7 +214,7 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 	 * @throws IllegalAccessException
 	 */
 	private TParams parseParameters(RestrictionAspect<TParams> aspect) throws Exception {
-		TParams target = aspect.dataType.newInstance();
+		TParams target = aspect.dataType.getConstructor().newInstance();
 		for (RestrictionAspectField field : aspect) {
 			String val = request.getParameter(field.name);
 			try {
@@ -227,8 +235,7 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 	}
 
 	/**
-	 * Parses the content of the input as a series of multipart binary encoded
-	 * data;
+	 * Parses the content of the input as a series of multipart binary encoded data;
 	 * 
 	 * @param paramsClass
 	 * @return
@@ -240,10 +247,10 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 	private TParams parseMultipart(RestrictionAspect<TParams> aspect) throws Exception {
 		String encoding = request.getCharacterEncoding();
 		Charset charset = Charset.forName(
-				encoding == null || encoding.isEmpty()
-						? "UTF-8"
-						: encoding);
-		TParams target = aspect.dataType.newInstance();
+				encoding == null || encoding.isEmpty() ?
+						"UTF-8" :
+						encoding);
+		TParams target = aspect.dataType.getConstructor().newInstance();
 		for (RestrictionAspectField field : aspect) {
 			try {
 				Part part = request.getPart(field.name);

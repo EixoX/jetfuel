@@ -63,10 +63,10 @@ public abstract class Database {
 	}
 
 	/**
-	 * Pops a connection from the pool and checks if it is open and the last
-	 * used time is below 19 minutes. If those things are false, it attempts to
-	 * close the connection. Otherwise it returns the connection or simply
-	 * instantiates a new one;
+	 * Pops a connection from the pool and checks if it is open and the last used
+	 * time is below 19 minutes. If those things are false, it attempts to close the
+	 * connection. Otherwise it returns the connection or simply instantiates a new
+	 * one;
 	 * 
 	 * @return
 	 * @throws SQLException
@@ -78,7 +78,7 @@ public abstract class Database {
 		else if (!connection_pool.isEmpty()) {
 			Connection conn = connection_pool.removeFirst();
 			Date conn_used = connection_last_used.removeFirst();
-			if (!conn.isClosed()) {
+			if (conn.isValid(500)) {
 				// 19 minutes threshold
 				if (new Date().getTime() - conn_used.getTime() <= 1140000)
 					return conn;
@@ -92,14 +92,25 @@ public abstract class Database {
 			return popConnection();
 		}
 
-		return properties == null
-				? DriverManager.getConnection(url)
-				: DriverManager.getConnection(url, properties);
+		return createConnection();
+
 	}
 
 	/**
-	 * Returns a connection to the pool and sets the last used date to the
-	 * current Date instance;
+	 * Creates a new connection based on the url and properties in this database;
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	protected Connection createConnection() throws SQLException {
+		return properties == null ?
+				DriverManager.getConnection(url) :
+				DriverManager.getConnection(url, properties);
+	}
+
+	/**
+	 * Returns a connection to the pool and sets the last used date to the current
+	 * Date instance;
 	 * 
 	 * @param conn
 	 */
@@ -133,7 +144,6 @@ public abstract class Database {
 	@Override
 	protected void finalize() throws Throwable {
 		recycleConnections();
-		super.finalize();
 	}
 
 	/**
@@ -187,9 +197,9 @@ public abstract class Database {
 	 * @throws SQLException
 	 */
 	public Object readIdentity(ResultSet generated_keys, Column identity) throws SQLException {
-		return generated_keys.next()
-				? generated_keys.getObject(1)
-				: null;
+		return generated_keys.next() ?
+				generated_keys.getObject(1) :
+				null;
 	}
 
 	/**

@@ -18,6 +18,13 @@ public interface UsecaseResultWriter {
 	public String getContentType();
 
 	/**
+	 * Gets the content disposition of the result;
+	 * 
+	 * @return
+	 */
+	public String getContentDisposition();
+
+	/**
 	 * Actually writes the result to the output;
 	 * 
 	 * @param os

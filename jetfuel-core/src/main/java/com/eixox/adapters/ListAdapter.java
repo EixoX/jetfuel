@@ -22,8 +22,8 @@ public class ListAdapter<T> extends Adapter<List<T>> {
 	public final Class<T> componentType;
 
 	/**
-	 * Creates a new list of the provided data type and using a specific
-	 * component adapter;
+	 * Creates a new list of the provided data type and using a specific component
+	 * adapter;
 	 * 
 	 * @param dataType
 	 * @param componentAdapter
@@ -35,8 +35,8 @@ public class ListAdapter<T> extends Adapter<List<T>> {
 	}
 
 	/**
-	 * Creates a new list of the provided data type and tries to find a
-	 * component adapter for the parameterized type;
+	 * Creates a new list of the provided data type and tries to find a component
+	 * adapter for the parameterized type;
 	 * 
 	 * @param dataType
 	 * @param parameterizedType
@@ -58,7 +58,7 @@ public class ListAdapter<T> extends Adapter<List<T>> {
 	 */
 	public List<T> newList() {
 		try {
-			return (List<T>) dataType.newInstance();
+			return (List<T>) dataType.getConstructor().newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -159,8 +159,7 @@ public class ListAdapter<T> extends Adapter<List<T>> {
 	}
 
 	/**
-	 * Changes the type of the source object to a List of this adapter's data
-	 * type;
+	 * Changes the type of the source object to a List of this adapter's data type;
 	 */
 	@Override
 	protected List<T> changeType(Class<?> sourceClass, Object source) {

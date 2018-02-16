@@ -24,9 +24,9 @@ public class LongAdapter extends Adapter<Long> {
 	 */
 	@Override
 	public Long parse(String source) {
-		return source == null || source.isEmpty()
-				? whenNull()
-				: new Long(source);
+		return source == null || source.isEmpty() ?
+				whenNull() :
+				Long.parseLong(source);
 	}
 
 	/**

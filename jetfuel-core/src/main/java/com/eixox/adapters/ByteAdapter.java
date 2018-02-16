@@ -20,9 +20,9 @@ public class ByteAdapter extends Adapter<Byte> {
 	 */
 	@Override
 	public Byte parse(String source) {
-		return source == null || source.isEmpty()
-				? whenNull()
-				: new Byte(source);
+		return source == null || source.isEmpty() ?
+				whenNull() :
+				Byte.parseByte(source);
 	}
 
 	/**

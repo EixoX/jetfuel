@@ -24,9 +24,9 @@ public class FloatAdapter extends Adapter<Float> {
 	 */
 	@Override
 	public Float parse(String source) {
-		return source == null || source.isEmpty()
-				? whenNull()
-				: new Float(source);
+		return source == null || source.isEmpty() ?
+				whenNull() :
+				Float.valueOf(source);
 	}
 
 	/**

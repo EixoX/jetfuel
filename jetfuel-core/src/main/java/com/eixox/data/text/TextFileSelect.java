@@ -47,13 +47,13 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 	@Override
 	public synchronized List<T> toList() {
 
-		ArrayList<T> list = new ArrayList<T>(limit > 0
-				? limit
-				: 20);
+		ArrayList<T> list = new ArrayList<T>(limit > 0 ?
+				limit :
+				20);
 
-		int imax = limit > 0
-				? limit
-				: Integer.MAX_VALUE;
+		int imax = limit > 0 ?
+				limit :
+				Integer.MAX_VALUE;
 
 		TextReader<T> reader = new TextReader<T>(schema, input, charset);
 		reader.filter = this.filter;
@@ -88,9 +88,9 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 		reader.filter = this.filter;
 		reader.skip(offset);
 
-		T item = reader.hasNext()
-				? reader.next()
-				: null;
+		T item = reader.hasNext() ?
+				reader.next() :
+				null;
 
 		// closes the reader;
 		try {
@@ -152,9 +152,9 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 	@Override
 	public Object firstMember(Column column) {
 		T first = first();
-		return first == null
-				? null
-				: column.getValue(first);
+		return first == null ?
+				null :
+				column.getValue(first);
 	}
 
 	@Override
@@ -180,19 +180,18 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 			this.input.close();
 		} catch (Exception e) {
 		}
-		super.finalize();
 	}
 
 	@Override
 	public void accept(Visitor<T> visitor) {
-		int imax = limit > 0
-				? limit
-				: Integer.MAX_VALUE;
+		int imax = limit > 0 ?
+				limit :
+				Integer.MAX_VALUE;
 
 		TextReader<T> reader = new TextReader<T>(schema, input, charset);
 		reader.filter = this.filter;
 		reader.skip(offset);
-		
+
 		// process the items;
 		for (int i = 0; i < imax && reader.hasNext(); i++)
 			visitor.visit(reader.next());

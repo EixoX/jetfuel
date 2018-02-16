@@ -108,9 +108,9 @@ public abstract class Adapter<T> {
 	 * @return
 	 */
 	public String format(T source) {
-		return source == null
-				? ""
-				: source.toString();
+		return source == null ?
+				"" :
+				source.toString();
 	}
 
 	/**
@@ -161,27 +161,25 @@ public abstract class Adapter<T> {
 
 	/**
 	 * Registers an adapter. This method will make sure that the adapter has a
-	 * parameterless constructor by instantiating it and will locate the data
-	 * type of the adapter, replacing any existing registered adapter for it.
+	 * parameterless constructor by instantiating it and will locate the data type
+	 * of the adapter, replacing any existing registered adapter for it.
 	 * 
 	 * @param adapter
 	 */
 	public static synchronized void register(Class<? extends Adapter<?>> adapter) {
 		try {
-			Adapter<?> instance = adapter.newInstance();
+			Adapter<?> instance = adapter.getConstructor().newInstance();
 			ADAPTERS.put(instance.dataType, adapter);
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	/**
-	 * Gets the data adapter registered on the static instances map or, if an
-	 * array, instantiates a new array adapter based on the component adapter;
-	 * ListAdapters cannot be instantiated using this method due to type erasure
-	 * on the compilation.
+	 * Gets the data adapter registered on the static instances map or, if an array,
+	 * instantiates a new array adapter based on the component adapter; ListAdapters
+	 * cannot be instantiated using this method due to type erasure on the
+	 * compilation.
 	 * 
 	 * @param dataType
 	 * @return
@@ -191,7 +189,7 @@ public abstract class Adapter<T> {
 		Class<?> adapterClass = ADAPTERS.get(dataType);
 		if (adapterClass != null)
 			try {
-				return (Adapter<T>) adapterClass.newInstance();
+				return (Adapter<T>) adapterClass.getConstructor().newInstance();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -206,8 +204,8 @@ public abstract class Adapter<T> {
 	}
 
 	/**
-	 * Uses an annotation to instantiate an adapter that can be either a list,
-	 * array or simple adapter.
+	 * Uses an annotation to instantiate an adapter that can be either a list, array
+	 * or simple adapter.
 	 * 
 	 * @param dataType
 	 * @param annotation
@@ -223,7 +221,7 @@ public abstract class Adapter<T> {
 			annotatedAdapter = constructor.newInstance(annotation);
 		} catch (NoSuchMethodException e) {
 			try {
-				annotatedAdapter = adapterClass.newInstance();
+				annotatedAdapter = adapterClass.getConstructor().newInstance();
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
@@ -251,8 +249,8 @@ public abstract class Adapter<T> {
 	}
 
 	/**
-	 * Gets the adapter that's best suited to read and write values to a
-	 * specific field of a class.
+	 * Gets the adapter that's best suited to read and write values to a specific
+	 * field of a class.
 	 * 
 	 * @param field
 	 * @return
@@ -271,7 +269,7 @@ public abstract class Adapter<T> {
 		// Direct match
 		if (adapterClass != null)
 			try {
-				return (Adapter<?>) adapterClass.newInstance();
+				return (Adapter<?>) adapterClass.getConstructor().newInstance();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -298,8 +296,8 @@ public abstract class Adapter<T> {
 	}
 
 	/**
-	 * Gets the adapter that's best suited to read and write values to a
-	 * specific method of a class.
+	 * Gets the adapter that's best suited to read and write values to a specific
+	 * method of a class.
 	 * 
 	 * @param field
 	 * @return
@@ -318,7 +316,7 @@ public abstract class Adapter<T> {
 		// Direct match
 		if (adapterClass != null)
 			try {
-				return (Adapter<?>) adapterClass.newInstance();
+				return (Adapter<?>) adapterClass.getConstructor().newInstance();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

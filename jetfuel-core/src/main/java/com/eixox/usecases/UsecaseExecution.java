@@ -79,7 +79,9 @@ public class UsecaseExecution<TParams, TResult> implements Runnable {
 	public static final <TParams, TResult> UsecaseExecution<TParams, TResult> create(
 			final Class<? extends UsecaseImplementation<TParams, TResult>> claz) {
 		try {
-			final UsecaseImplementation<TParams, TResult> uc = (UsecaseImplementation<TParams, TResult>) claz.newInstance();
+			final UsecaseImplementation<TParams, TResult> uc = (UsecaseImplementation<TParams, TResult>) claz
+					.getConstructor()
+					.newInstance();
 			final UsecaseExecution<TParams, TResult> execution = new UsecaseExecution<>();
 			execution.usecase = uc;
 			return execution;

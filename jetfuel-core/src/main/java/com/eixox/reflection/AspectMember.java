@@ -29,9 +29,8 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	public final Adapter<?> adapter;
 
 	/**
-	 * Initializes the aspect member with the given parameters. The adapter will
-	 * be used to convert values of any type to the expected value of the
-	 * member.
+	 * Initializes the aspect member with the given parameters. The adapter will be
+	 * used to convert values of any type to the expected value of the member.
 	 * 
 	 * @param name
 	 * @param adapter
@@ -75,8 +74,7 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	public abstract Annotation[] getAnnotations();
 
 	/**
-	 * When overriden will actually get the value of a specific member of an
-	 * object.
+	 * When overriden will actually get the value of a specific member of an object.
 	 * 
 	 * @param instance
 	 * @return
@@ -99,8 +97,7 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	public abstract Class<?> getDataType();
 
 	/**
-	 * When overriden will actually set the value of a specific member of an
-	 * object.
+	 * When overriden will actually set the value of a specific member of an object.
 	 * 
 	 * @param instance
 	 * @param value
@@ -123,7 +120,7 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 					value instanceof Map &&
 					!Map.class.isAssignableFrom(getDataType())) {
 				Class<?> childClass = getDataType();
-				Object child = childClass.newInstance();
+				Object child = childClass.getConstructor().newInstance();
 				for (Map.Entry<String, ?> entry : ((Map<String, ?>) value).entrySet()) {
 					Field field = childClass.getField(entry.getKey());
 					Object fieldvalue = Adapter.getInstance(field).convert(entry.getValue());

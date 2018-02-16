@@ -24,9 +24,9 @@ public class ShortAdapter extends Adapter<Short> {
 	 */
 	@Override
 	public Short parse(String source) {
-		return source == null || source.isEmpty()
-				? whenNull()
-				: new Short(source);
+		return source == null || source.isEmpty() ?
+				whenNull() :
+				Short.parseShort(source);
 	}
 
 	/**

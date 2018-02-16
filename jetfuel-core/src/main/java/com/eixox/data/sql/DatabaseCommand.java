@@ -156,8 +156,8 @@ public class DatabaseCommand {
 	}
 
 	/**
-	 * Executes a query that returns a resultset that will be processed by the
-	 * given command processor;
+	 * Executes a query that returns a resultset that will be processed by the given
+	 * command processor;
 	 * 
 	 * @param conn
 	 * @param processor
@@ -165,46 +165,39 @@ public class DatabaseCommand {
 	 * @throws SQLException
 	 */
 	public final <T> T executeQuery(Connection conn, ResultsetProcessor<T> processor) throws SQLException {
-		boolean oldAutoCommit = conn.getAutoCommit();
-		conn.setAutoCommit(false);
-		try {
-			if (parameters.isEmpty()) {
-				Statement stm = conn.createStatement();
-				stm.setFetchSize(2000);
+		if (parameters.isEmpty()) {
+			Statement stm = conn.createStatement();
+			stm.setFetchSize(2000);
+			try {
+				ResultSet rs = stm.executeQuery(text.toString());
 				try {
-					ResultSet rs = stm.executeQuery(text.toString());
-					try {
-						return processor.process(rs);
-					} finally {
-						rs.close();
-					}
+					return processor.process(rs);
 				} finally {
-					stm.close();
+					rs.close();
 				}
-			} else {
-				PreparedStatement ps = conn.prepareStatement(this.text.toString());
-				try {
-					for (int i = 0; i < parameters.size(); i++)
-						ps.setObject(i + 1, parameters.get(i));
-					ResultSet rs = ps.executeQuery(text.toString());
-					try {
-						return processor.process(rs);
-					} finally {
-						rs.close();
-					}
-				} finally {
-					ps.close();
-				}
+			} finally {
+				stm.close();
 			}
-		} finally {
-			// conn.setAutoCommit(true);
-			conn.setAutoCommit(oldAutoCommit);
+		} else {
+			PreparedStatement ps = conn.prepareStatement(this.text.toString());
+			try {
+				for (int i = 0; i < parameters.size(); i++)
+					ps.setObject(i + 1, parameters.get(i));
+				ResultSet rs = ps.executeQuery(text.toString());
+				try {
+					return processor.process(rs);
+				} finally {
+					rs.close();
+				}
+			} finally {
+				ps.close();
+			}
 		}
 	}
 
 	/**
-	 * Executes a query that returns a resultset that will be processed by the
-	 * given command processor;
+	 * Executes a query that returns a resultset that will be processed by the given
+	 * command processor;
 	 * 
 	 * @param processor
 	 * @return
@@ -304,8 +297,8 @@ public class DatabaseCommand {
 	}
 
 	/**
-	 * Executes an insert command and let the given processor handle the
-	 * generated keys;
+	 * Executes an insert command and let the given processor handle the generated
+	 * keys;
 	 * 
 	 * @param conn
 	 * @param generatedKeysProcessor
@@ -349,8 +342,8 @@ public class DatabaseCommand {
 	}
 
 	/**
-	 * Executes an insert command and let the given processor handle the
-	 * generated keys;
+	 * Executes an insert command and let the given processor handle the generated
+	 * keys;
 	 * 
 	 * @param generatedKeysProcessor
 	 * @return
@@ -382,9 +375,9 @@ public class DatabaseCommand {
 			try {
 				ResultSet rs = stm.executeQuery(text.toString());
 				try {
-					return rs.next()
-							? rs.getObject(1)
-							: null;
+					return rs.next() ?
+							rs.getObject(1) :
+							null;
 				} finally {
 					rs.close();
 				}
@@ -398,9 +391,9 @@ public class DatabaseCommand {
 					ps.setObject(i + 1, parameters.get(i));
 				ResultSet rs = ps.executeQuery();
 				try {
-					return rs.next()
-							? rs.getObject(1)
-							: null;
+					return rs.next() ?
+							rs.getObject(1) :
+							null;
 				} finally {
 					rs.close();
 				}
@@ -509,9 +502,9 @@ public class DatabaseCommand {
 	 * @return
 	 */
 	public DatabaseCommand appendBoolean(Boolean value) {
-		this.text.append(value
-				? "TRUE"
-				: "FALSE");
+		this.text.append(value ?
+				"TRUE" :
+				"FALSE");
 		return this;
 	}
 
@@ -646,7 +639,8 @@ public class DatabaseCommand {
 	 * @return
 	 */
 	public DatabaseCommand appendByteArray(byte[] value) {
-		throw new RuntimeException("Byte array serialization to SQL not implemented for command on " + database.getClass());
+		throw new RuntimeException(
+				"Byte array serialization to SQL not implemented for command on " + database.getClass());
 	}
 
 	/**
@@ -731,8 +725,7 @@ public class DatabaseCommand {
 
 	/**
 	 * Appends the values as comma separated list of SQL or throws a
-	 * RuntimeException if the object can't be converted to an Array or
-	 * Iterable;
+	 * RuntimeException if the object can't be converted to an Array or Iterable;
 	 * 
 	 * @param col
 	 */
