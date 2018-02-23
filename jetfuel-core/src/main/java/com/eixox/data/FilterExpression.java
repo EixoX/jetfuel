@@ -196,7 +196,7 @@ public class FilterExpression implements Filter {
 	 * @return
 	 */
 	public final FilterExpression or(Column column, FilterComparison comparison, Object value) {
-		return and(new FilterTerm(column, comparison, value));
+		return or(new FilterTerm(column, comparison, value));
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class FilterExpression implements Filter {
 	 * @return
 	 */
 	public final FilterExpression or(Column column, Object value) {
-		return and(new FilterTerm(column, value));
+		return or(new FilterTerm(column, value));
 	}
 
 	/**

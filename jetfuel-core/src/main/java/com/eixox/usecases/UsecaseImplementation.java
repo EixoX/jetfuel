@@ -83,7 +83,8 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 			try {
 
 				if (execution.params == null) {
-					execution.validation = new RestrictionValidation("param", false, "Parameters were expected on this usecase.");
+					execution.validation = new RestrictionValidation("param", false,
+							"Parameters were expected on this usecase.");
 					execution.result_type = UsecaseResultType.VALIDATION_FAILED;
 					return;
 				}
@@ -179,9 +180,19 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	}
 
 	/**
-	 * An optional usecase result writer to tell the transport something
-	 * different; The default implementation returns null and the executioner
-	 * must decide what to do;
+	 * Creates a new usecase execution state holder and runs this usecase;
+	 * 
+	 * @param params
+	 * @return
+	 */
+	public final UsecaseExecution<TParams, TResult> execute(TParams params) {
+		return execute(params, null);
+	}
+
+	/**
+	 * An optional usecase result writer to tell the transport something different;
+	 * The default implementation returns null and the executioner must decide what
+	 * to do;
 	 */
 	public UsecaseResultWriter getResultWriter(TResult result) {
 		return null;

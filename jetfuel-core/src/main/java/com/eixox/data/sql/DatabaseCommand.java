@@ -165,6 +165,7 @@ public class DatabaseCommand {
 	 * @throws SQLException
 	 */
 	public final <T> T executeQuery(Connection conn, ResultsetProcessor<T> processor) throws SQLException {
+		System.out.println(text.toString());
 		if (parameters.isEmpty()) {
 			Statement stm = conn.createStatement();
 			stm.setFetchSize(2000);
@@ -268,12 +269,37 @@ public class DatabaseCommand {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Object executeInsertAndScopeIdentity(Connection conn, final Column identity) throws SQLException {
-		return executeInsert(conn, new ResultsetProcessor<Object>() {
-			public Object process(ResultSet rs) throws SQLException {
-				return database.readIdentity(rs, identity);
+	public Object executeInsertAndScopeIdentity(Connection conn, Column identity) throws SQLException {
+		System.out.println(text.toString());
+		if (parameters.isEmpty()) {
+			Statement stm = conn.createStatement();
+			try {
+				stm.execute(text.toString(), Statement.RETURN_GENERATED_KEYS);
+				ResultSet generatedKeys = stm.getGeneratedKeys();
+				try {
+					return database.readIdentity(generatedKeys, identity);
+				} finally {
+					generatedKeys.close();
+				}
+			} finally {
+				stm.close();
 			}
-		});
+		} else {
+			PreparedStatement ps = conn.prepareStatement(this.text.toString(), Statement.RETURN_GENERATED_KEYS);
+			try {
+				for (int i = 0; i < parameters.size(); i++)
+					ps.setObject(i + 1, parameters.get(i));
+				ps.execute();
+				ResultSet generatedKeys = ps.getGeneratedKeys();
+				try {
+					return database.readIdentity(generatedKeys, identity);
+				} finally {
+					generatedKeys.close();
+				}
+			} finally {
+				ps.close();
+			}
+		}
 	}
 
 	/**
@@ -306,6 +332,7 @@ public class DatabaseCommand {
 	 * @throws SQLException
 	 */
 	public final int executeInsert(Connection conn, ResultsetProcessor<?> generatedKeysProcessor) throws SQLException {
+		System.out.println(text.toString());
 		if (parameters.isEmpty()) {
 			Statement stm = conn.createStatement();
 			try {
