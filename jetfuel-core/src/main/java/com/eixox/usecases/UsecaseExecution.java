@@ -13,7 +13,12 @@ import com.eixox.restrictions.RestrictionValidation;
  * @param <TParams>
  * @param <TResult>
  */
-public class UsecaseExecution<TParams, TResult> implements Runnable {
+public class UsecaseExecution<TParams, TResult> {
+
+	/**
+	 * Holds the name of the usecase;
+	 */
+	public String name;
 
 	/**
 	 * Marks the date that the execution started;
@@ -59,36 +64,5 @@ public class UsecaseExecution<TParams, TResult> implements Runnable {
 	 * The usecase instance to be executed;
 	 */
 	public transient UsecaseImplementation<TParams, TResult> usecase;
-
-	/**
-	 * Runs this execution with the current fields.
-	 */
-	@Override
-	public void run() {
-		this.usecase.execute(this);
-	}
-
-	/**
-	 * Helper method to avoid typing all the reflection types on instantiation;
-	 * 
-	 * @param claz
-	 * @return
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 */
-	public static final <TParams, TResult> UsecaseExecution<TParams, TResult> create(
-			final Class<? extends UsecaseImplementation<TParams, TResult>> claz) {
-		try {
-			final UsecaseImplementation<TParams, TResult> uc = (UsecaseImplementation<TParams, TResult>) claz
-					.getConstructor()
-					.newInstance();
-			final UsecaseExecution<TParams, TResult> execution = new UsecaseExecution<>();
-			execution.usecase = uc;
-			return execution;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
-	}
 
 }

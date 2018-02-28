@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Rodrigo Portela
  *
  */
-public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<TParams, TResult> {
+public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<TParams, TResult> implements Runnable {
 
 	/**
 	 * A static shared object mapper instance;
@@ -69,20 +69,19 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 	}
 
 	/**
-	 * Runs the usecase from the path info of the request, parsing the parameters or
-	 * json body and writes the execution result to the response;
+	 * Locates a usecase by name from the path info;
+	 * 
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
-	public void run() {
-
+	private boolean parseUsecase() {
 		try {
 			// Locates a usecase by name from the path info;
-			String usecaseName = this.package_name + request.getPathInfo().replace('/', '.');
-			Class<?> usecaseClass = Class.forName(usecaseName);
-			Object usecase = usecaseClass.getConstructor().newInstance();
-			this.usecase = (UsecaseImplementation<TParams, TResult>) usecase;
-
+			this.name = this.package_name + request.getPathInfo().replace('/', '.');
+			Class<?> usecaseClass = Class.forName(this.name);
+			Object usecaseInstance = usecaseClass.getConstructor().newInstance();
+			this.usecase = (UsecaseImplementation<TParams, TResult>) usecaseInstance;
+			return true;
 		} catch (ClassNotFoundException e) {
 			// Sends a 404 - not found response if the usecase is not located
 			try {
@@ -90,7 +89,7 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			return;
+			return false;
 		} catch (InstantiationException e) {
 			// Sends a 404 - not found if the usecase can't be instantiated;
 			try {
@@ -99,7 +98,7 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			return;
+			return false;
 		} catch (IllegalAccessException e) {
 			// Sends a 404 - not found if the usecase can't be instantiated;
 			try {
@@ -108,7 +107,7 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			return;
+			return false;
 		} catch (Exception e) {
 			// Sends a 404 - not found if the usecase can't be cast to an
 			// usecase implementation or in any other exception;
@@ -119,10 +118,16 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			return;
+			return false;
 		}
+	}
 
-		// Parses the parameters of the usecase execution;
+	/**
+	 * Parses the parameters of the usecase execution;
+	 * 
+	 * @return
+	 */
+	private boolean parseParams() {
 		try {
 			Class<TParams> paramsClass = usecase.getParamsClass();
 			if (!Void.class.equals(paramsClass)) {
@@ -147,13 +152,31 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 					this.params = parseParameters(restrictionAspect);
 			}
 
+			return true;
+
 		} catch (Exception e) {
 
 			// If something fails, fallback to writing to output
 			// VALIDATION_FAILED and returns;
 			this.validation = new RestrictionValidation("params", false, e.getMessage());
 			this.result_type = UsecaseResultType.VALIDATION_FAILED;
-			writeOutputAsJson();
+			writeOutputAsJson(this);
+			return false;
+		}
+	}
+
+	/**
+	 * Runs the usecase from the path info of the request, parsing the parameters or
+	 * json body and writes the execution result to the response;
+	 */
+	@Override
+	public void run() {
+
+		if (!parseUsecase()) {
+			return;
+		}
+
+		if (!parseParams()) {
 			return;
 		}
 
@@ -165,15 +188,14 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			this.headers.put(name, value);
 		}
 
-		// Actually runs the usecase;
-		this.usecase.execute(this);
+		UsecaseExecution<TParams, TResult> actual = this.usecase.execute(this.params, this.headers);
 
 		// Special case: SUCCESS
-		if (this.result_type == UsecaseResultType.SUCCESS) {
+		if (actual.result_type == UsecaseResultType.SUCCESS) {
 
 			// Does the implementation has a custom result writer to write to
 			// the output?
-			UsecaseResultWriter resultWriter = usecase.getResultWriter(this.result);
+			UsecaseResultWriter resultWriter = usecase.getResultWriter(actual.result);
 			if (resultWriter != null) {
 				try {
 					String contentDisposition = resultWriter.getContentDisposition();
@@ -190,16 +212,17 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 		}
 
 		// Falls back to writing itself as json to the output;
-		writeOutputAsJson();
+		writeOutputAsJson(actual);
+
 	}
 
 	/**
 	 * Writes itself as json object to the output stream of the response;
 	 */
-	private void writeOutputAsJson() {
+	private void writeOutputAsJson(Object source) {
 		try {
 			response.setContentType("application/json");
-			MAPPER.writeValue(response.getOutputStream(), this);
+			MAPPER.writeValue(response.getOutputStream(), source);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -120,7 +120,7 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	 * 
 	 * @param execution
 	 */
-	public final void execute(UsecaseExecution<TParams, TResult> execution) {
+	private final void execute(UsecaseExecution<TParams, TResult> execution) {
 
 		execution.execution_start = new Date();
 		execution.result_type = UsecaseResultType.NOT_EXECUTED;
