@@ -45,7 +45,7 @@ public class BooleanAdapter extends Adapter<Boolean> {
 	 */
 	@Override
 	public Boolean whenNull() {
-		return Boolean.FALSE;
+		return null;
 	}
 
 }

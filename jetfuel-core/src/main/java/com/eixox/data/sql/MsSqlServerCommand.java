@@ -6,4 +6,11 @@ public class MsSqlServerCommand extends DatabaseCommand {
 		super(database);
 	}
 
+	@Override
+	public DatabaseCommand appendBoolean(Boolean value) {
+		return value ?
+				appendNumber(1) :
+				appendNumber(0);
+	}
+
 }

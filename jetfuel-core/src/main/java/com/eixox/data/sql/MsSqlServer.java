@@ -43,6 +43,7 @@ public class MsSqlServer extends Database {
 	public DatabaseCommand createCommand() {
 		return new MsSqlServerCommand(this);
 	}
+	
 
 	@Override
 	public DatabaseSchema readSchema() {

@@ -72,7 +72,8 @@ public abstract class DataStorage<T> {
 	public synchronized T selectByIdentity(Object id) {
 		Column identity = getSchema().getIdentity();
 		if (identity == null)
-			throw new RuntimeException("This schema has no identity column: " + getClass() + " -> " + getSchema().getSchemaName());
+			throw new RuntimeException(
+					"This schema has no identity column: " + getClass() + " -> " + getSchema().getSchemaName());
 		else
 			return select().where(identity, id).first();
 	}
@@ -228,7 +229,7 @@ public abstract class DataStorage<T> {
 		if (identity != null) {
 			Object identity_value = identity.getValue(item);
 			if (isEmptyIdentity(identity_value))
-				throw new RuntimeException("An IDENTITY value is expected for the UPDATE command on " + item.getClass() + " -> " + item);
+				return 0L;
 			else
 				return updateByColumn(item, identity, identity_value);
 		}
@@ -298,7 +299,7 @@ public abstract class DataStorage<T> {
 	 * @param item
 	 */
 	public synchronized final void save(T item) {
-		if (update(item) == 0L)
+		if (update(item) < 1L)
 			insert(item);
 	}
 

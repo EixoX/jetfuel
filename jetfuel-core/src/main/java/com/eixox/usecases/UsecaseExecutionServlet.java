@@ -152,6 +152,8 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 					this.params = parseParameters(restrictionAspect);
 			}
 
+			System.out.println(MAPPER.writeValueAsString(this));
+
 			return true;
 
 		} catch (Exception e) {
