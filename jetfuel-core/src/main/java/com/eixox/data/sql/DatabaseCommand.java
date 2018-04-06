@@ -106,7 +106,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(this.text.toString(), e);
 		}
 	}
 
@@ -151,7 +151,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(this.text.toString(), e);
 		}
 	}
 
@@ -165,7 +165,7 @@ public class DatabaseCommand {
 	 * @throws SQLException
 	 */
 	public final <T> T executeQuery(Connection conn, ResultsetProcessor<T> processor) throws SQLException {
-		System.out.println(text.toString());
+		// System.out.println(text.toString());
 		if (parameters.isEmpty()) {
 			Statement stm = conn.createStatement();
 			stm.setFetchSize(2000);
@@ -212,7 +212,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(this.text.toString(), e);
 		}
 	}
 
@@ -270,7 +270,7 @@ public class DatabaseCommand {
 	 * @throws SQLException
 	 */
 	public Object executeInsertAndScopeIdentity(Connection conn, Column identity) throws SQLException {
-		System.out.println(text.toString());
+		// System.out.println(text.toString());
 		if (parameters.isEmpty()) {
 			Statement stm = conn.createStatement();
 			try {
@@ -318,7 +318,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(this.text.toString(), e);
 		}
 	}
 
@@ -332,7 +332,7 @@ public class DatabaseCommand {
 	 * @throws SQLException
 	 */
 	public final int executeInsert(Connection conn, ResultsetProcessor<?> generatedKeysProcessor) throws SQLException {
-		System.out.println(text.toString());
+		// System.out.println(text.toString());
 		if (parameters.isEmpty()) {
 			Statement stm = conn.createStatement();
 			try {
@@ -384,7 +384,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(this.text.toString(), e);
 		}
 	}
 
@@ -402,9 +402,9 @@ public class DatabaseCommand {
 			try {
 				ResultSet rs = stm.executeQuery(text.toString());
 				try {
-					return rs.next() ?
-							rs.getObject(1) :
-							null;
+					return rs.next()
+							? rs.getObject(1)
+							: null;
 				} finally {
 					rs.close();
 				}
@@ -418,9 +418,9 @@ public class DatabaseCommand {
 					ps.setObject(i + 1, parameters.get(i));
 				ResultSet rs = ps.executeQuery();
 				try {
-					return rs.next() ?
-							rs.getObject(1) :
-							null;
+					return rs.next()
+							? rs.getObject(1)
+							: null;
 				} finally {
 					rs.close();
 				}
@@ -445,7 +445,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(this.text.toString(), e);
 		}
 	}
 
@@ -529,9 +529,9 @@ public class DatabaseCommand {
 	 * @return
 	 */
 	public DatabaseCommand appendBoolean(Boolean value) {
-		this.text.append(value ?
-				"TRUE" :
-				"FALSE");
+		this.text.append(value
+				? "TRUE"
+				: "FALSE");
 		return this;
 	}
 
@@ -626,7 +626,7 @@ public class DatabaseCommand {
 			transformer.transform(source, result);
 			appendString(writer.toString());
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(this.text.toString(), e);
 		}
 		return this;
 	}
