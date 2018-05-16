@@ -212,7 +212,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(this.text.toString(), e);
+			throw new RuntimeException(e.getMessage() + " on " + this.text.toString(), e);
 		}
 	}
 

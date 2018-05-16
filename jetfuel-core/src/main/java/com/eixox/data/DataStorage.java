@@ -228,10 +228,9 @@ public abstract class DataStorage<T> {
 		Column identity = schema.getIdentity();
 		if (identity != null) {
 			Object identity_value = identity.getValue(item);
-			if (isEmptyIdentity(identity_value))
-				return 0L;
-			else
+			if (!isEmptyIdentity(identity_value)) {
 				return updateByColumn(item, identity, identity_value);
+			}
 		}
 
 		// updates by unique keys

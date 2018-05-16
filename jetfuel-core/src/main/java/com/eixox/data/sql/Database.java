@@ -22,6 +22,11 @@ import com.eixox.data.schema.DatabaseSchema;
 public abstract class Database {
 
 	/**
+	 * Sets a connection threshold;
+	 */
+	private int connection_threshold;
+
+	/**
 	 * Sets a savepoint for transactions.
 	 */
 	private Savepoint transaction_savepoint;
@@ -57,9 +62,20 @@ public abstract class Database {
 	 * @param url
 	 * @param properties
 	 */
-	public Database(String url, Properties properties) {
+	public Database(String url, Properties properties, int connection_threshold) {
 		this.url = url;
 		this.properties = properties;
+		this.connection_threshold = connection_threshold;
+	}
+
+	/**
+	 * Creates a new sql database;
+	 * 
+	 * @param url
+	 * @param properties
+	 */
+	public Database(String url, Properties properties) {
+		this(url, properties, 1 * 60 * 1000); // 1 minute threshold;
 	}
 
 	/**
@@ -78,10 +94,11 @@ public abstract class Database {
 		else if (!connection_pool.isEmpty()) {
 			Connection conn = connection_pool.removeFirst();
 			Date conn_used = connection_last_used.removeFirst();
-			if (conn.isValid(500)) {
+			if (!conn.isClosed()) {
 				// 19 minutes threshold
-				if (new Date().getTime() - conn_used.getTime() <= 1140000)
+				if (new Date().getTime() - conn_used.getTime() <= connection_threshold) {
 					return conn;
+				}
 
 				// just close it and do nothing
 				try {
@@ -103,9 +120,9 @@ public abstract class Database {
 	 * @throws SQLException
 	 */
 	protected Connection createConnection() throws SQLException {
-		return properties == null ?
-				DriverManager.getConnection(url) :
-				DriverManager.getConnection(url, properties);
+		return properties == null
+				? DriverManager.getConnection(url)
+				: DriverManager.getConnection(url, properties);
 	}
 
 	/**
@@ -197,9 +214,9 @@ public abstract class Database {
 	 * @throws SQLException
 	 */
 	public Object readIdentity(ResultSet generated_keys, Column identity) throws SQLException {
-		return generated_keys.next() ?
-				generated_keys.getObject(1) :
-				null;
+		return generated_keys.next()
+				? generated_keys.getObject(1)
+				: null;
 	}
 
 	/**
