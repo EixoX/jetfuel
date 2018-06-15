@@ -173,6 +173,7 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	public final UsecaseExecution<TParams, TResult> execute(TParams params, Map<String, Object> headers) {
 		UsecaseExecution<TParams, TResult> execution = new UsecaseExecution<>();
 		execution.usecase = this;
+		execution.name = getClass().toString();
 		execution.params = params;
 		execution.headers = headers;
 		execute(execution);
