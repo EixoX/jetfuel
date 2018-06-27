@@ -26,7 +26,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	/**
 	 * The list of members of this class;
 	 */
-	private final ArrayList<G> members;
+	protected final ArrayList<G> members;
 	/**
 	 * The data type associated with this aspect;
 	 */

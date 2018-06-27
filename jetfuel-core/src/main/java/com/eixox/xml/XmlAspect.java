@@ -44,11 +44,18 @@ public class XmlAspect<T> extends Aspect<T, XmlAspectMember> implements XmlAdapt
 	 */
 	@Override
 	protected XmlAspectMember decorate(Field field) {
-		Xml annotation = field.getAnnotation(Xml.class);
-		return annotation == null
-				? null
-				: new XmlAspectMember(field, annotation);
+		return null;
+	}
 
+	private void decorateChildren() {
+		Field[] fields = this.dataType.getFields();
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			Xml annotation = field.getAnnotation(Xml.class);
+			if (annotation != null) {
+				this.members.add(new XmlAspectMember(field, annotation));
+			}
+		}
 	}
 
 	/**
@@ -69,13 +76,13 @@ public class XmlAspect<T> extends Aspect<T, XmlAspectMember> implements XmlAdapt
 		if (aspect == null) {
 			aspect = new XmlAspect<T>(claz);
 			INSTANCES.put(claz, aspect);
+			aspect.decorateChildren();
 		}
 		return aspect;
 	}
 
 	/**
-	 * Gets the xml aspect of the first actual argument of a paramemeterized
-	 * type;
+	 * Gets the xml aspect of the first actual argument of a paramemeterized type;
 	 * 
 	 * @param parameterizedType
 	 * @return
@@ -89,8 +96,8 @@ public class XmlAspect<T> extends Aspect<T, XmlAspectMember> implements XmlAdapt
 	}
 
 	/**
-	 * Regardless of the xml name of this instance, will parse all child
-	 * attributes from the given node;
+	 * Regardless of the xml name of this instance, will parse all child attributes
+	 * from the given node;
 	 */
 	public void parse(Node node, T target) {
 		for (XmlAspectMember member : this) {
@@ -100,8 +107,8 @@ public class XmlAspect<T> extends Aspect<T, XmlAspectMember> implements XmlAdapt
 	}
 
 	/**
-	 * Regardless of the xml name of this instance, will parse all child
-	 * attributes from the given node;
+	 * Regardless of the xml name of this instance, will parse all child attributes
+	 * from the given node;
 	 */
 	public T parse(Node node) {
 		T item = newInstance();
@@ -110,8 +117,8 @@ public class XmlAspect<T> extends Aspect<T, XmlAspectMember> implements XmlAdapt
 	}
 
 	/**
-	 * Looks up a specific path of child nodes and parses the found node using
-	 * this xml aspect.|
+	 * Looks up a specific path of child nodes and parses the found node using this
+	 * xml aspect.|
 	 * 
 	 * @param node
 	 * @param path
