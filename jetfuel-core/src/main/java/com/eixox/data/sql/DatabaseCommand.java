@@ -106,7 +106,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(this.text.toString(), e);
+			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
 		}
 	}
 
@@ -151,7 +151,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(this.text.toString(), e);
+			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
 		}
 	}
 
@@ -318,7 +318,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(this.text.toString(), e);
+			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
 		}
 	}
 
@@ -384,7 +384,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(this.text.toString(), e);
+			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
 		}
 	}
 
@@ -445,7 +445,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(this.text.toString(), e);
+			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
 		}
 	}
 
@@ -626,7 +626,7 @@ public class DatabaseCommand {
 			transformer.transform(source, result);
 			appendString(writer.toString());
 		} catch (Exception e) {
-			throw new RuntimeException(this.text.toString(), e);
+			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
 		}
 		return this;
 	}
