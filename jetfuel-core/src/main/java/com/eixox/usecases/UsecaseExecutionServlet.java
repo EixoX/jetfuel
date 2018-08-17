@@ -162,7 +162,6 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			// VALIDATION_FAILED and returns;
 			this.validation = new RestrictionValidation("params", false, e.getMessage());
 			this.result_type = UsecaseResultType.VALIDATION_FAILED;
-			writeOutputAsJson(this);
 			return false;
 		}
 	}
@@ -179,6 +178,7 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 		}
 
 		if (!parseParams()) {
+			this.outputUsecaseExecution(this);
 			return;
 		}
 
@@ -190,14 +190,17 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			this.headers.put(name, value);
 		}
 
-		UsecaseExecution<TParams, TResult> actual = this.usecase.execute(this.params, this.headers);
+		UsecaseExecution<TParams, TResult> execution = this.usecase.execute(this.params, this.headers);
+		this.outputUsecaseExecution(execution);
+	}
 
+	protected void outputUsecaseExecution(UsecaseExecution<TParams, TResult> execution) {
 		// Special case: SUCCESS
-		if (actual.result_type == UsecaseResultType.SUCCESS) {
+		if (execution.result_type == UsecaseResultType.SUCCESS) {
 
 			// Does the implementation has a custom result writer to write to
 			// the output?
-			UsecaseResultWriter resultWriter = usecase.getResultWriter(actual.result);
+			UsecaseResultWriter resultWriter = usecase.getResultWriter(execution.result);
 			if (resultWriter != null) {
 				try {
 					String contentDisposition = resultWriter.getContentDisposition();
@@ -213,18 +216,9 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			}
 		}
 
-		// Falls back to writing itself as json to the output;
-		writeOutputAsJson(actual);
-
-	}
-
-	/**
-	 * Writes itself as json object to the output stream of the response;
-	 */
-	private void writeOutputAsJson(Object source) {
 		try {
 			response.setContentType("application/json");
-			MAPPER.writeValue(response.getOutputStream(), source);
+			MAPPER.writeValue(response.getOutputStream(), execution);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -272,9 +266,9 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 	private TParams parseMultipart(RestrictionAspect<TParams> aspect) throws Exception {
 		String encoding = request.getCharacterEncoding();
 		Charset charset = Charset.forName(
-				encoding == null || encoding.isEmpty() ?
-						"UTF-8" :
-						encoding);
+				encoding == null || encoding.isEmpty()
+						? "UTF-8"
+						: encoding);
 		TParams target = aspect.dataType.getConstructor().newInstance();
 		for (RestrictionAspectField field : aspect) {
 			try {
@@ -316,5 +310,14 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 			if (contentType.equalsIgnoreCase(JSON_CONTENT_TYPES[i]))
 				return true;
 		return false;
+	}
+
+	/**
+	 * Gets the Method Verb of the request;
+	 * 
+	 * @return
+	 */
+	public String getVerb() {
+		return this.request.getMethod();
 	}
 }

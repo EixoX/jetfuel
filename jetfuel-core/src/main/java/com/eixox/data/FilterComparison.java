@@ -13,8 +13,8 @@ public enum FilterComparison {
 	 */
 	EQUAL_TO,
 	/**
-	 * States that on object is not equal to another and that null is not equal
-	 * to non null.
+	 * States that on object is not equal to another and that null is not equal to
+	 * non null.
 	 */
 	NOT_EQUAL_TO,
 	/**
@@ -50,5 +50,7 @@ public enum FilterComparison {
 	 * States than an object is not matched by a regular expression ir is not
 	 * filtered by a like expresion.
 	 */
-	NOT_LIKE
+	NOT_LIKE,
+
+	CONTAINS
 }

@@ -923,6 +923,22 @@ public class DatabaseCommand {
 	}
 
 	/**
+	 * Appends a CONTAINS statement to the underlying command;
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
+	protected DatabaseCommand appendContains(String name, Object value) {
+		this.text.append("CONTAINS (");
+		this.appendName(name);
+		this.text.append(", ");
+		appendValue(value);
+		this.text.append(")");
+		return this;
+	}
+
+	/**
 	 * Appends a filter to the underlying command text;
 	 * 
 	 * @param filter
@@ -977,6 +993,8 @@ public class DatabaseCommand {
 				return appendNotIn(term.column.getColumnName(), term.value);
 			case NOT_LIKE:
 				return appendNotLike(term.column.getColumnName(), term.value);
+			case CONTAINS:
+				return appendContains(term.column.getColumnName(), term.value);
 			default:
 				throw new RuntimeException("Unknown filter comparison " + term.comparison);
 			}
