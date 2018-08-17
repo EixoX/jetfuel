@@ -27,7 +27,7 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 	/**
 	 * A static shared object mapper instance;
 	 */
-	private static final ObjectMapper MAPPER = new ObjectMapper();
+	protected static final ObjectMapper MAPPER = new ObjectMapper();
 
 	/**
 	 * The known content types to tell that the parameters are json.
@@ -43,17 +43,17 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 	/**
 	 * A private transient instance of the serlvet request;
 	 */
-	private transient final HttpServletRequest request;
+	protected transient final HttpServletRequest request;
 
 	/**
 	 * A private transient instance of the servlet response;
 	 */
-	private transient final HttpServletResponse response;
+	protected transient final HttpServletResponse response;
 
 	/**
 	 * A private transient instance of the package name used to lookup usecases;
 	 */
-	private transient final String package_name;
+	protected transient final String package_name;
 
 	/**
 	 * Creates a new instance of the usecase execution servlet;
