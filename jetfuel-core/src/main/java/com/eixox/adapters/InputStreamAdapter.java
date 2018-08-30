@@ -1,6 +1,7 @@
 package com.eixox.adapters;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -72,6 +73,27 @@ public class InputStreamAdapter extends Adapter<InputStream> {
 			}
 		else
 			return super.changeType(sourceClass, source);
+	}
+
+	/**
+	 * Reads the content of an input stream to a byte array;
+	 * 
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 */
+	public byte[] readBytes(InputStream is) throws IOException {
+
+		byte[] buffer = new byte[4086];
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream(4086)) {
+			for (int i = is.read(buffer); i >= 0; i = is.read(buffer)) {
+				bos.write(buffer, 0, i);
+			}
+			byte[] out = bos.toByteArray();
+			bos.close();
+			return out;
+		}
+
 	}
 
 }
