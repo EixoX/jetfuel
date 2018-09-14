@@ -3,6 +3,7 @@ package com.eixox.usecases;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.TreeMap;
 
@@ -66,6 +67,7 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 		this.request = request;
 		this.response = response;
 		this.package_name = package_name;
+		this.execution_start = new Date();
 	}
 
 	/**
@@ -174,10 +176,12 @@ public class UsecaseExecutionServlet<TParams, TResult> extends UsecaseExecution<
 	public void run() {
 
 		if (!parseUsecase()) {
+			this.execution_end = new Date();
 			return;
 		}
 
 		if (!parseParams()) {
+			this.execution_end = new Date();
 			this.outputUsecaseExecution(this);
 			return;
 		}
