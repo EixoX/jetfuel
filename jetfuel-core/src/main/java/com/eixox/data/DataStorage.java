@@ -342,4 +342,32 @@ public abstract class DataStorage<T> {
 		return value == null ||
 				(value instanceof Number && ((Number) value).longValue() == 0L);
 	}
+
+	/**
+	 * Checks if an object exists on the database by it's annotated properties;
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public boolean exists(T entity) {
+		ColumnSchema<?> schema = getSchema();
+		Column identity = schema.getIdentity();
+		if (identity != null) {
+			Object identity_value = identity.getValue(entity);
+			if (identity_value != null &&
+					!Double.valueOf(0.0).equals(identity_value) &&
+					!Long.valueOf(0L).equals(identity_value) &&
+					!Integer.valueOf(0).equals(identity_value)) {
+				return select().where(identity, identity_value).exists();
+			}
+		}
+		for (Column uq : schema.getUniqueColumns()) {
+			Object uq_value = uq.getValue(entity);
+			if (uq_value != null)
+				return select().where(uq, uq_value).exists();
+		}
+		return schema.getCompositeKeys().isEmpty()
+				? false
+				: select().where(schema.getCompositeKeyFilter(entity)).exists();
+	}
 }
