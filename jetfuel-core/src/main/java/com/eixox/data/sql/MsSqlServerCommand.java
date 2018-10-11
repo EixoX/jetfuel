@@ -8,9 +8,9 @@ public class MsSqlServerCommand extends DatabaseCommand {
 
 	@Override
 	public DatabaseCommand appendBoolean(Boolean value) {
-		return value ?
-				appendNumber(1) :
-				appendNumber(0);
+		return value
+				? appendNumber(1)
+				: appendNumber(0);
 	}
 
 }

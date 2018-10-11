@@ -160,6 +160,12 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			}
 			command.appendRaw(")");
 			itemcounter++;
+
+			if (itemcounter == 1000) {
+				command.executeNonQuery();
+				insert(iterator);
+				return;
+			}
 		}
 
 		if (itemcounter > 0)
@@ -175,8 +181,7 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 		return new DataSelect<T>() {
 
 			/**
-			 * Executes the command and returns an array list containing the
-			 * entities;
+			 * Executes the command and returns an array list containing the entities;
 			 */
 			@Override
 			public List<T> toList() {
@@ -202,16 +207,16 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			}
 
 			/**
-			 * Executes the command and returns an iterator to the list
-			 * containing the entities;
+			 * Executes the command and returns an iterator to the list containing the
+			 * entities;
 			 */
 			public Iterator<T> iterator() {
 				return toList().iterator();
 			}
 
 			/**
-			 * Executes the command and returns the first entity that matches
-			 * the filter on this instance;
+			 * Executes the command and returns the first entity that matches the filter on
+			 * this instance;
 			 */
 			@Override
 			public T first() {
@@ -234,8 +239,7 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			}
 
 			/**
-			 * Executes the select command and retrives the values returned as a
-			 * MAP;
+			 * Executes the select command and retrives the values returned as a MAP;
 			 */
 			@Override
 			public Map<String, Object> toMap() {
@@ -316,8 +320,7 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			}
 
 			/**
-			 * Gets the values of a specific column as an array list of member
-			 * values;
+			 * Gets the values of a specific column as an array list of member values;
 			 */
 			@Override
 			public List<Object> getMembers(Column column) {
@@ -399,8 +402,7 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			}
 
 			/**
-			 * Executes the delete command and returns the number of records
-			 * affected;
+			 * Executes the delete command and returns the number of records affected;
 			 */
 			@Override
 			public long execute() {

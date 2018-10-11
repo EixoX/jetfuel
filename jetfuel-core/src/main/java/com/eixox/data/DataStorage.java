@@ -52,6 +52,8 @@ public abstract class DataStorage<T> {
 	 * @param iterator
 	 */
 	public synchronized void insert(Iterator<T> iterator) {
+		
+		
 		while (iterator.hasNext())
 			insert(iterator.next());
 	}

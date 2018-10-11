@@ -643,10 +643,6 @@ public class DatabaseCommand {
 		for (int i = 0; i < stringLength; ++i) {
 			char c = value.charAt(i);
 			switch (c) {
-			case '\\':
-				this.text.append('\\');
-				this.text.append('\\');
-				break;
 			case '\'':
 				this.text.append('\'');
 				this.text.append('\'');
