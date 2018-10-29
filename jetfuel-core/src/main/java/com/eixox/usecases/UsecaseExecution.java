@@ -65,4 +65,14 @@ public class UsecaseExecution<TParams, TResult> {
 	 */
 	public transient UsecaseImplementation<TParams, TResult> usecase;
 
+	public UsecaseExecution<TParams, TResult> setResult(TResult result) {
+		this.result = result;
+		return this;
+	}
+
+	public UsecaseExecution<TParams, TResult> setResultType(UsecaseResultType result_type) {
+		this.result_type = result_type;
+		return this;
+	}
+
 }
