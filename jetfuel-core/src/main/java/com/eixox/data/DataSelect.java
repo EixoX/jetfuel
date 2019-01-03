@@ -195,7 +195,7 @@ public abstract class DataSelect<T>
 	 * @return
 	 */
 	public List<T> toList() {
-		ArrayList<T> list = new ArrayList<T>(limit > 0
+		ArrayList<T> list = new ArrayList<>(limit > 0
 				? limit
 				: 10);
 

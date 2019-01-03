@@ -62,21 +62,22 @@ public interface Column {
 	 * 
 	 * @return
 	 */
-	public ColumnSchema<?> getSchema();
+	@SuppressWarnings("rawtypes")
+	public ColumnSchema getSchema();
 
 	/**
 	 * Gets the value of this column from the specific row;
 	 * 
-	 * @param source_row
+	 * @param sourceRow
 	 * @return
 	 */
-	public Object getValue(Object source_row);
+	public Object getValue(Object sourceRow);
 
 	/**
 	 * Sets the value of this column on the target row;
 	 * 
-	 * @param target_row
+	 * @param targetRow
 	 * @param value
 	 */
-	public void setValue(Object target_row, Object value);
+	public void setValue(Object targetRow, Object value);
 }

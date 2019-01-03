@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import com.eixox.reflection.Aspect;
+import com.eixox.reflection.AspectField;
 
 /**
  * An adapter aspect for instantiating and parsing objects from various sources;
@@ -12,7 +13,7 @@ import com.eixox.reflection.Aspect;
  *
  * @param <T>
  */
-public class AdapterAspect<T> extends Aspect<T, AdapterAspectField> {
+public class AdapterAspect<T> extends Aspect<T, AspectField> {
 
 	/**
 	 * A private constructor for instantiating a new adapter aspect;
@@ -27,14 +28,14 @@ public class AdapterAspect<T> extends Aspect<T, AdapterAspectField> {
 	 * Finds public non-static non-final fields for creating the adapters;
 	 */
 	@Override
-	protected AdapterAspectField decorate(Field field) throws Exception {
-		return new AdapterAspectField(field);
+	protected AspectField decorate(Field field) {
+		return new AspectField(field);
 	}
 
 	/**
 	 * A private static map of adapter aspects for fast caching;
 	 */
-	private static final HashMap<Class<?>, AdapterAspect<?>> INSTANCES = new HashMap<Class<?>, AdapterAspect<?>>();
+	private static final HashMap<Class<?>, AdapterAspect<?>> INSTANCES = new HashMap<>();
 
 	/**
 	 * Gets an adapter aspect for a specific class;
@@ -43,13 +44,8 @@ public class AdapterAspect<T> extends Aspect<T, AdapterAspectField> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized final <T> AdapterAspect<T> getInstance(Class<T> claz) {
-		AdapterAspect<T> aspect = (AdapterAspect<T>) INSTANCES.get(claz);
-		if (aspect == null) {
-			aspect = new AdapterAspect<T>(claz);
-			INSTANCES.put(claz, aspect);
-		}
-		return aspect;
+	public static final synchronized <T> AdapterAspect<T> getInstance(Class<T> claz) {
+		return (AdapterAspect<T>) INSTANCES.computeIfAbsent(claz, k -> new AdapterAspect<>(claz));
 	}
 
 }

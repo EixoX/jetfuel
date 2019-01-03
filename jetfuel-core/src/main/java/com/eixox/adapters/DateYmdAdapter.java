@@ -4,8 +4,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.eixox.JetfuelException;
+
 public class DateYmdAdapter extends DateAdapter {
 
+	@Override
 	public final Date parse(String source) {
 		if (source == null || source.isEmpty())
 			return null;
@@ -96,7 +99,7 @@ public class DateYmdAdapter extends DateAdapter {
 			second = Integer.parseInt(source.substring(15, 17));
 			break;
 		default:
-			throw new RuntimeException("Unrecognizable YMD date format on " + source);
+			throw new JetfuelException("Unrecognizable YMD date format on " + source);
 		}
 
 		if (year < 100) {
@@ -127,8 +130,7 @@ public class DateYmdAdapter extends DateAdapter {
 		String p1 = Integer.toString(y) +
 				(M < 10
 						? "0" + Integer.toString(M)
-						: Integer.toString(M))
-				+
+						: Integer.toString(M)) +
 				(d < 10
 						? "0" + Integer.toString(d)
 						: Integer.toString(d));
@@ -139,12 +141,10 @@ public class DateYmdAdapter extends DateAdapter {
 			return p1 +
 					(h < 10
 							? "0" + Integer.toString(h)
-							: Integer.toString(h))
-					+
+							: Integer.toString(h)) +
 					(m < 10
 							? "0" + Integer.toString(m)
-							: Integer.toString(m))
-					+
+							: Integer.toString(m)) +
 					(s < 10
 							? "0" + Integer.toString(s)
 							: Integer.toString(s));

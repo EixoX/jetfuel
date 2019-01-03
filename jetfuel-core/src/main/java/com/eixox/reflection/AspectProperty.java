@@ -3,6 +3,7 @@ package com.eixox.reflection;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import com.eixox.JetfuelException;
 import com.eixox.adapters.Adapter;
 
 /**
@@ -30,8 +31,8 @@ public class AspectProperty extends AspectMember {
 	public final Method setter;
 
 	/**
-	 * Gets the declared annotations on both the getter and the setter methods
-	 * of the property;
+	 * Gets the declared annotations on both the getter and the setter methods of
+	 * the property;
 	 */
 	@Override
 	public Annotation[] getDeclaredAnnotations() {
@@ -64,11 +65,12 @@ public class AspectProperty extends AspectMember {
 		T anno = setter == null
 				? null
 				: setter.getAnnotation(claz);
-		return anno != null
-				? anno
-				: (setter == null
-						? null
-						: setter.getAnnotation(claz));
+		if (anno != null)
+			return anno;
+		else
+			return setter == null
+					? null
+					: setter.getAnnotation(claz);
 	}
 
 	/**
@@ -110,8 +112,12 @@ public class AspectProperty extends AspectMember {
 	 * Invokes the getter and retrieves the property value;
 	 */
 	@Override
-	protected Object getMemberValue(Object instance) throws Exception {
-		return this.getter.invoke(instance);
+	protected Object getMemberValue(Object instance) {
+		try {
+			return this.getter.invoke(instance);
+		} catch (Exception e) {
+			throw new JetfuelException(e);
+		}
 	}
 
 	/**
@@ -139,8 +145,12 @@ public class AspectProperty extends AspectMember {
 	 * Invokes the setter and puts a value on the property;
 	 */
 	@Override
-	protected void setMemberValue(Object instance, Object value) throws Exception {
-		this.setter.invoke(instance, value);
+	protected void setMemberValue(Object instance, Object value) {
+		try {
+			this.setter.invoke(instance, value);
+		} catch (Exception e) {
+			throw new JetfuelException(e);
+		}
 
 	}
 
@@ -156,8 +166,8 @@ public class AspectProperty extends AspectMember {
 	}
 
 	/**
-	 * Checks if the getter is synthetic or the setter if there's no getter for
-	 * the property;
+	 * Checks if the getter is synthetic or the setter if there's no getter for the
+	 * property;
 	 */
 	@Override
 	public boolean isSynthetic() {

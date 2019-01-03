@@ -3,6 +3,7 @@ package com.eixox.reflection;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
+import com.eixox.JetfuelException;
 import com.eixox.adapters.Adapter;
 
 /**
@@ -56,16 +57,24 @@ public class AspectField extends AspectMember {
 	 * Gets the value of the field from an object instance.
 	 */
 	@Override
-	protected Object getMemberValue(Object instance) throws Exception {
-		return this.field.get(instance);
+	protected Object getMemberValue(Object instance) {
+		try {
+			return this.field.get(instance);
+		} catch (Exception e) {
+			throw new JetfuelException(e);
+		}
 	}
 
 	/**
 	 * Sets the value of the field in an object instance.
 	 */
 	@Override
-	protected void setMemberValue(Object instance, Object value) throws Exception {
-		this.field.set(instance, value);
+	protected void setMemberValue(Object instance, Object value) {
+		try {
+			this.field.set(instance, value);
+		} catch (Exception e) {
+			throw new JetfuelException(e);
+		}
 
 	}
 

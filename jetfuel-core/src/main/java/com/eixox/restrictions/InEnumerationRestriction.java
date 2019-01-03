@@ -1,11 +1,12 @@
 package com.eixox.restrictions;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class InEnumerationRestriction implements Restriction {
 
-	public final HashMap<String, String> items = new HashMap<String, String>();
+	public final Map<String, String> items = new HashMap<>();
 
 	public InEnumerationRestriction(String... values) {
 		for (int i = 0; i < values.length; i++) {

@@ -35,13 +35,12 @@ public class TableSelect extends DataSelect<TableRow> {
 	}
 
 	/**
-	 * Creates an iterator that can go over the records selected by this
-	 * instance;
+	 * Creates an iterator that can go over the records selected by this instance;
 	 */
 	public synchronized Iterator<TableRow> iterator() {
 		Iterator<TableRow> iterator = new TableRowIterator(table, filter, offset, limit);
 		if (this.sort != null) {
-			LinkedList<TableRow> list = new LinkedList<TableRow>();
+			LinkedList<TableRow> list = new LinkedList<>();
 			while (iterator.hasNext())
 				list.add(iterator.next());
 			this.sort.sortRows(list);
@@ -71,7 +70,7 @@ public class TableSelect extends DataSelect<TableRow> {
 		if (item == null)
 			return null;
 
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 		for (Column col : getSchema()) {
 			String name = col.getColumnName();
 			Object value = col.getValue(item);
@@ -102,8 +101,7 @@ public class TableSelect extends DataSelect<TableRow> {
 	}
 
 	/**
-	 * Gets the first member of the first row that passes this instance's
-	 * filter;
+	 * Gets the first member of the first row that passes this instance's filter;
 	 */
 	@Override
 	public Object firstMember(Column column) {
@@ -118,7 +116,7 @@ public class TableSelect extends DataSelect<TableRow> {
 	 */
 	@Override
 	public List<Object> getMembers(Column column) {
-		ArrayList<Object> list = new ArrayList<Object>();
+		ArrayList<Object> list = new ArrayList<>();
 		for (TableRow row : this) {
 			Object v = column.getValue(row);
 			list.add(v);

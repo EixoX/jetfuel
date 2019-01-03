@@ -21,7 +21,7 @@ public class ListStorage<T> extends DataStorage<T> {
 	public ListStorage(Class<T> claz, List<T> innerList) {
 		this.aspect = new DataAspect<T, DataAspectField>(claz, null) {
 			@Override
-			protected DataAspectField decorate(Field field) throws Exception {
+			protected DataAspectField decorate(Field field) {
 				int modifiers = field.getModifiers();
 				return Modifier.isFinal(modifiers) ||
 						Modifier.isStatic(modifiers) ||
@@ -50,7 +50,7 @@ public class ListStorage<T> extends DataStorage<T> {
 
 	@Override
 	public DataSelect<T> select() {
-		return new ListSelect<T>(this);
+		return new ListSelect<>(this);
 	}
 
 	@Override

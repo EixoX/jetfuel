@@ -14,7 +14,7 @@ public class LengthRestriction implements Restriction {
 		this(length.min(), length.max());
 	}
 
-	public synchronized final RestrictionResult validate(Object input) {
+	public final synchronized RestrictionResult validate(Object input) {
 		if (input == null)
 			return new RestrictionResult(true, "");
 
@@ -24,7 +24,6 @@ public class LengthRestriction implements Restriction {
 				: new RestrictionResult(false, "O tamanho deve ser entre [" + min + "," + max + "].");
 	}
 
-	
 	@Override
 	public String toString() {
 		return "LengthRestriction(" + min + ", " + max + ")";

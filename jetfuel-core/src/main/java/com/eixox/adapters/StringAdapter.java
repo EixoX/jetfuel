@@ -17,6 +17,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Node;
 
+import com.eixox.JetfuelException;
+
 /**
  * A generic, super handy string adapter that can read and write strings.
  * 
@@ -62,7 +64,7 @@ public class StringAdapter extends Adapter<String> {
 			is.close();
 			return writer.toString();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -77,7 +79,7 @@ public class StringAdapter extends Adapter<String> {
 		try {
 			return convert(new InputStreamReader(is, charset));
 		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -95,7 +97,7 @@ public class StringAdapter extends Adapter<String> {
 			in.close();
 			return writer.toString();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -115,7 +117,7 @@ public class StringAdapter extends Adapter<String> {
 			transformer.transform(source, result);
 			return sw.toString();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -129,7 +131,7 @@ public class StringAdapter extends Adapter<String> {
 		try {
 			return convert(new FileReader(file));
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 

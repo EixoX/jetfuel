@@ -22,9 +22,9 @@ public class ListSelect<T> extends DataSelect<T> {
 	}
 
 	public Iterator<T> iterator() {
-		Iterator<T> iterator = new ListStorageIterator<T>(storage, filter, offset, limit);
+		Iterator<T> iterator = new ListStorageIterator<>(storage, filter, offset, limit);
 		if (sort != null) {
-			LinkedList<T> list = new LinkedList<T>();
+			LinkedList<T> list = new LinkedList<>();
 			while (iterator.hasNext())
 				list.add(iterator.next());
 			sort.sortEntities(list);
@@ -47,7 +47,7 @@ public class ListSelect<T> extends DataSelect<T> {
 		if (first == null)
 			return null;
 
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 		for (DataAspectField field : storage.aspect) {
 			String name = field.name;
 			Object value = field.getValue(first);
@@ -62,7 +62,7 @@ public class ListSelect<T> extends DataSelect<T> {
 	@Override
 	public long count() {
 		long counter = 0;
-		Iterator<T> iterator = new ListStorageIterator<T>(storage, filter, 0, 0);
+		Iterator<T> iterator = new ListStorageIterator<>(storage, filter, 0, 0);
 		while (iterator.hasNext())
 			counter++;
 		return counter;
@@ -83,7 +83,7 @@ public class ListSelect<T> extends DataSelect<T> {
 
 	@Override
 	public List<Object> getMembers(Column column) {
-		List<Object> list = new ArrayList<Object>();
+		List<Object> list = new ArrayList<>();
 		Iterator<T> iterator = iterator();
 		while (iterator.hasNext())
 			list.add(column.getValue(iterator.next()));

@@ -4,23 +4,24 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
+import com.eixox.JetfuelException;
+
 public class InStaticFinalFieldRestriction implements Restriction {
 
-	private final Class<?> static_final_fields;
-	private final ArrayList<Object> values = new ArrayList<Object>();
+	private final Class<?> staticFinalFields;
+	private final ArrayList<Object> values = new ArrayList<>();
 
 	public InStaticFinalFieldRestriction(Class<?> claz) {
-		this.static_final_fields = claz;
+		this.staticFinalFields = claz;
 		try {
 			Field[] fields = claz.getFields();
 			for (int i = 0; i < fields.length; i++) {
 				int modifiers = fields[i].getModifiers();
-				if (Modifier.isStatic(modifiers))
-					if (Modifier.isFinal(modifiers))
-						values.add(fields[i].get(null));
+				if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers))
+					values.add(fields[i].get(null));
 			}
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			throw new JetfuelException(ex);
 		}
 	}
 
@@ -28,7 +29,7 @@ public class InStaticFinalFieldRestriction implements Restriction {
 		this(annotation.value());
 	}
 
-	public synchronized final RestrictionResult validate(Object input) {
+	public final synchronized RestrictionResult validate(Object input) {
 		for (Object o : this.values)
 			if (o.equals(input))
 				return new RestrictionResult(true, "");
@@ -38,6 +39,6 @@ public class InStaticFinalFieldRestriction implements Restriction {
 
 	@Override
 	public String toString() {
-		return "InStaticFinalFieldRestriction(" + static_final_fields.getName() + ")";
+		return "InStaticFinalFieldRestriction(" + staticFinalFields.getName() + ")";
 	}
 }

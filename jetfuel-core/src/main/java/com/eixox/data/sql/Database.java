@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import com.eixox.data.Column;
+import com.eixox.JetfuelException;
 import com.eixox.data.schema.DatabaseSchema;
 
 /**
@@ -24,27 +24,27 @@ public abstract class Database {
 	/**
 	 * Sets a connection threshold;
 	 */
-	private int connection_threshold;
+	private int connectionThreshold;
 
 	/**
 	 * Sets a savepoint for transactions.
 	 */
-	private Savepoint transaction_savepoint;
+	private Savepoint transactionSavepoint;
 
 	/**
 	 * Saves the transaction used on a savepoint;
 	 */
-	private Connection transaction_connection;
+	private Connection transactionConnection;
 
 	/**
 	 * The connection pool list;
 	 */
-	private final LinkedList<Connection> connection_pool = new LinkedList<Connection>();
+	private final LinkedList<Connection> connectionPool = new LinkedList<>();
 
 	/**
 	 * The dates the connection pool wast last used;
 	 */
-	private final LinkedList<Date> connection_last_used = new LinkedList<Date>();
+	private final LinkedList<Date> connectionLastUsed = new LinkedList<>();
 
 	/**
 	 * The database URL
@@ -57,25 +57,26 @@ public abstract class Database {
 	public final Properties properties;
 
 	/**
-	 * Creates a new sql database;
+	 * Creates a new SQL database;
 	 * 
 	 * @param url
 	 * @param properties
 	 */
-	public Database(String url, Properties properties, int connection_threshold) {
+	public Database(String url, Properties properties, int connectionThreshold) {
 		this.url = url;
 		this.properties = properties;
-		this.connection_threshold = connection_threshold;
+		this.connectionThreshold = connectionThreshold;
 	}
 
 	/**
-	 * Creates a new sql database;
+	 * Creates a new SQL database with 1 minute threshold;
 	 * 
 	 * @param url
 	 * @param properties
 	 */
 	public Database(String url, Properties properties) {
-		this(url, properties, 1 * 60 * 1000); // 1 minute threshold;
+
+		this(url, properties, 1 * 60 * 1000);
 	}
 
 	/**
@@ -88,15 +89,15 @@ public abstract class Database {
 	 * @throws SQLException
 	 */
 	public synchronized Connection popConnection() throws SQLException {
-		if (this.transaction_connection != null)
-			return this.transaction_connection;
+		if (this.transactionConnection != null)
+			return this.transactionConnection;
 
-		else if (!connection_pool.isEmpty()) {
-			Connection conn = connection_pool.removeFirst();
-			Date conn_used = connection_last_used.removeFirst();
+		else if (!connectionPool.isEmpty()) {
+			Connection conn = connectionPool.removeFirst();
+			Date connUsed = connectionLastUsed.removeFirst();
 			if (!conn.isClosed()) {
 				// 19 minutes threshold
-				if (new Date().getTime() - conn_used.getTime() <= connection_threshold) {
+				if (new Date().getTime() - connUsed.getTime() <= connectionThreshold) {
 					return conn;
 				}
 
@@ -104,8 +105,9 @@ public abstract class Database {
 				try {
 					conn.close();
 				} catch (Exception e) {
+					// do nothing
 				}
-			} // try to pop another one;
+			}
 			return popConnection();
 		}
 
@@ -133,9 +135,9 @@ public abstract class Database {
 	 */
 	public synchronized void pushConnection(Connection conn) {
 
-		if (this.transaction_connection == null) {
-			connection_pool.addLast(conn);
-			connection_last_used.addLast(new Date());
+		if (this.transactionConnection == null) {
+			connectionPool.addLast(conn);
+			connectionLastUsed.addLast(new Date());
 		}
 
 	}
@@ -145,12 +147,15 @@ public abstract class Database {
 	 * dates; If anything happens, the exception is written to STDOUT;
 	 */
 	public synchronized void recycleConnections() {
-		for (Connection conn = connection_pool.removeFirst(); conn != null; conn = connection_pool.removeFirst()) {
-			connection_last_used.removeFirst();
+		for (Connection conn = connectionPool.removeFirst(); conn != null; conn = connectionPool.removeFirst()) {
+			connectionLastUsed.removeFirst();
 			try {
 				conn.close();
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.getLogger(getClass().getName()).log(
+						System.Logger.Level.ERROR,
+						e.getMessage(),
+						e);
 			}
 		}
 	}
@@ -208,14 +213,14 @@ public abstract class Database {
 	/**
 	 * Reads the identity column from a set of generated keys;
 	 * 
-	 * @param generated_keys
+	 * @param generatedKeys
 	 * @param identity
 	 * @return
 	 * @throws SQLException
 	 */
-	public Object readIdentity(ResultSet generated_keys, Column identity) throws SQLException {
-		return generated_keys.next()
-				? generated_keys.getObject(1)
+	public Object readIdentity(ResultSet generatedKeys) throws SQLException {
+		return generatedKeys.next()
+				? generatedKeys.getObject(1)
 				: null;
 	}
 
@@ -225,7 +230,7 @@ public abstract class Database {
 	 * @return
 	 */
 	public synchronized DatabaseSchema readSchema() {
-		throw new RuntimeException("SQL Schema read not implemented in " + getClass());
+		throw new JetfuelException("SQL Schema read not implemented in " + getClass());
 	}
 
 	/**
@@ -235,13 +240,13 @@ public abstract class Database {
 	 * @throws SQLException
 	 */
 	public synchronized Savepoint beginTransaction() throws SQLException {
-		if (this.transaction_connection != null)
-			throw new RuntimeException("Another transaction is already running: " + transaction_savepoint);
+		if (this.transactionConnection != null)
+			throw new JetfuelException("Another transaction is already running: " + transactionSavepoint);
 
-		this.transaction_connection = popConnection();
-		this.transaction_connection.setAutoCommit(false);
-		this.transaction_savepoint = this.transaction_connection.setSavepoint();
-		return this.transaction_savepoint;
+		this.transactionConnection = popConnection();
+		this.transactionConnection.setAutoCommit(false);
+		this.transactionSavepoint = this.transactionConnection.setSavepoint();
+		return this.transactionSavepoint;
 	}
 
 	/**
@@ -250,12 +255,12 @@ public abstract class Database {
 	 * @throws SQLException
 	 */
 	public synchronized void commit() throws SQLException {
-		if (this.transaction_connection != null) {
-			this.transaction_connection.commit();
-			this.transaction_savepoint = null;
-			this.transaction_connection.setAutoCommit(true);
-			this.pushConnection(this.transaction_connection);
-			this.transaction_connection = null;
+		if (this.transactionConnection != null) {
+			this.transactionConnection.commit();
+			this.transactionSavepoint = null;
+			this.transactionConnection.setAutoCommit(true);
+			this.pushConnection(this.transactionConnection);
+			this.transactionConnection = null;
 		}
 	}
 
@@ -265,12 +270,12 @@ public abstract class Database {
 	 * @throws SQLException
 	 */
 	public synchronized void rollback() throws SQLException {
-		if (this.transaction_connection != null) {
-			this.transaction_connection.rollback(this.transaction_savepoint);
-			this.transaction_savepoint = null;
-			this.transaction_connection.setAutoCommit(true);
-			this.pushConnection(this.transaction_connection);
-			this.transaction_connection = null;
+		if (this.transactionConnection != null) {
+			this.transactionConnection.rollback(this.transactionSavepoint);
+			this.transactionSavepoint = null;
+			this.transactionConnection.setAutoCommit(true);
+			this.pushConnection(this.transactionConnection);
+			this.transactionConnection = null;
 		}
 	}
 

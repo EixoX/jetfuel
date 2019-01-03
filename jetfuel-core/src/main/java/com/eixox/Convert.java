@@ -22,25 +22,37 @@ public final class Convert {
 	private Convert() {
 	}
 
+	private static JetfuelException createException(Object source, Class<?> target) {
+		return new JetfuelException("Can't convert " +
+				(source == null
+						? "NULL"
+						: source.getClass()) +
+				" to " +
+				target);
+	}
+
 	/**
 	 * Converts nulls, booleans, strings and numbers to boolean.
 	 * 
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final boolean toBoolean(Object in) {
+	public static final synchronized boolean toBoolean(Object in) {
 		if (in == null)
 			return false;
 		else if (in instanceof Boolean)
 			return (Boolean) in;
 		else if (in instanceof Number)
 			return ((Number) in).intValue() != 0;
-		else if (in instanceof String)
-			return ((String) in).isEmpty()
-					? false
-					: Boolean.parseBoolean((String) in);
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Boolean.TYPE);
+		else if (in instanceof String) {
+			if (((String) in).isEmpty())
+				return false;
+			else
+				return Boolean.parseBoolean((String) in);
+		} else {
+			throw createException(in, Boolean.TYPE);
+		}
+
 	}
 
 	/**
@@ -49,7 +61,7 @@ public final class Convert {
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final byte toByte(Object in) {
+	public static final synchronized byte toByte(Object in) {
 		if (in == null)
 			return 0;
 		else if (in instanceof Byte)
@@ -62,8 +74,10 @@ public final class Convert {
 					: Byte.parseByte((String) in);
 		else if (in instanceof Date)
 			return (byte) ((Date) in).getTime();
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Byte.TYPE);
+		else {
+			throw createException(in, Byte.TYPE);
+		}
+
 	}
 
 	/**
@@ -72,7 +86,7 @@ public final class Convert {
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final char toChar(Object in) {
+	public static final synchronized char toChar(Object in) {
 		if (in == null)
 			return 0;
 		else if (in instanceof Character)
@@ -85,8 +99,10 @@ public final class Convert {
 					: ((String) in).charAt(0);
 		else if (in instanceof Date)
 			return (char) ((Date) in).getTime();
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Character.TYPE);
+		else {
+			throw createException(in, Character.TYPE);
+		}
+
 	}
 
 	/**
@@ -95,7 +111,7 @@ public final class Convert {
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final short toShort(Object in) {
+	public static final synchronized short toShort(Object in) {
 		if (in == null)
 			return 0;
 		else if (in instanceof Short)
@@ -108,8 +124,10 @@ public final class Convert {
 					: Short.parseShort((String) in);
 		else if (in instanceof Date)
 			return (short) ((Date) in).getTime();
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Short.TYPE);
+		else {
+			throw createException(in, Short.TYPE);
+		}
+
 	}
 
 	/**
@@ -118,7 +136,7 @@ public final class Convert {
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final int toInt(Object in) {
+	public static final synchronized int toInt(Object in) {
 		if (in == null)
 			return 0;
 		else if (in instanceof Integer)
@@ -131,8 +149,9 @@ public final class Convert {
 					: Integer.parseInt((String) in);
 		else if (in instanceof Date)
 			return (int) ((Date) in).getTime();
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Integer.TYPE);
+		else {
+			throw createException(in, Integer.TYPE);
+		}
 	}
 
 	/**
@@ -141,7 +160,7 @@ public final class Convert {
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final long toLong(Object in) {
+	public static final synchronized long toLong(Object in) {
 		if (in == null)
 			return 0L;
 		else if (in instanceof Long)
@@ -154,8 +173,9 @@ public final class Convert {
 					: Long.parseLong((String) in);
 		else if (in instanceof Date)
 			return ((Date) in).getTime();
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Long.TYPE);
+		else {
+			throw createException(in, Long.TYPE);
+		}
 	}
 
 	/**
@@ -164,7 +184,7 @@ public final class Convert {
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final float toFloat(Object in) {
+	public static final synchronized float toFloat(Object in) {
 		if (in == null)
 			return 0f;
 		else if (in instanceof Float)
@@ -177,8 +197,9 @@ public final class Convert {
 					: Float.parseFloat((String) in);
 		else if (in instanceof Date)
 			return ((Date) in).getTime();
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Float.TYPE);
+		else {
+			throw createException(in, Float.TYPE);
+		}
 	}
 
 	/**
@@ -187,7 +208,7 @@ public final class Convert {
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final double toDouble(Object in) {
+	public static final synchronized double toDouble(Object in) {
 		if (in == null)
 			return 0.0;
 		else if (in instanceof Double)
@@ -200,8 +221,9 @@ public final class Convert {
 					: Double.parseDouble((String) in);
 		else if (in instanceof Date)
 			return ((Date) in).getTime();
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Double.TYPE);
+		else {
+			throw createException(in, Double.TYPE);
+		}
 	}
 
 	/**
@@ -210,7 +232,7 @@ public final class Convert {
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final Date toDate(Object in, DateFormat format) {
+	public static final synchronized Date toDate(Object in, DateFormat format) {
 		if (in == null)
 			return null;
 		else if (in instanceof Date)
@@ -221,12 +243,13 @@ public final class Convert {
 			try {
 				return format.parse((String) in);
 			} catch (ParseException e) {
-				throw new RuntimeException(e);
+				throw new JetfuelException(e);
 			}
 		else if (in instanceof Calendar)
 			return ((Calendar) in).getTime();
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Date.class);
+		else {
+			throw createException(in, Date.class);
+		}
 	}
 
 	/**
@@ -236,7 +259,7 @@ public final class Convert {
 	 * @param format
 	 * @return
 	 */
-	public static synchronized final Date toDate(Object in, String format) {
+	public static final synchronized Date toDate(Object in, String format) {
 		return toDate(in, new SimpleDateFormat(format));
 	}
 
@@ -247,7 +270,7 @@ public final class Convert {
 	 * @param format
 	 * @return
 	 */
-	public static synchronized final Number toNumber(Object in, NumberFormat format) {
+	public static final synchronized Number toNumber(Object in, NumberFormat format) {
 		if (in == null)
 			return 0.0;
 		else if (in instanceof Number)
@@ -262,10 +285,11 @@ public final class Convert {
 						? 0.0
 						: format.parse((String) in);
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw new JetfuelException(e);
 			}
-		else
-			throw new RuntimeException("Can't convert " + in.getClass() + " to " + Number.class);
+		else {
+			throw createException(in, Number.class);
+		}
 
 	}
 
@@ -276,7 +300,7 @@ public final class Convert {
 	 * @param format
 	 * @return
 	 */
-	public static synchronized final Number toNumber(Object in, String format) {
+	public static final synchronized Number toNumber(Object in, String format) {
 		return toNumber(in, new DecimalFormat(format));
 	}
 
@@ -286,7 +310,7 @@ public final class Convert {
 	 * @param in
 	 * @return
 	 */
-	public static synchronized final Number toNumber(Object in) {
+	public static final synchronized Number toNumber(Object in) {
 		return toNumber(in, DecimalFormat.getNumberInstance());
 	}
 

@@ -12,7 +12,7 @@ public final class UUIDHelper {
 
 	}
 
-	public static synchronized final UUID generateTimebased() {
+	public static final synchronized UUID generateTimebased() {
 		long hi = Calendar.getInstance().getTimeInMillis();
 		long lo = RANDOM.nextLong();
 		return new UUID(hi, lo);

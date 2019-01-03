@@ -3,8 +3,12 @@ package com.eixox.data.text;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map.Entry;
 
+import com.eixox.JetfuelException;
 import com.eixox.data.Column;
 import com.eixox.data.ColumnSchema;
 import com.eixox.data.DataUpdate;
@@ -49,28 +53,29 @@ public class TextFileUpdate<T> extends DataUpdate {
 		try {
 
 			String filename2 = file.getCanonicalPath() + ".tmp";
-			TextReader<T> reader = new TextReader<T>(schema, new FileInputStream(file), charset);
-			TextWriter<T> writer = new TextWriter<T>(schema, filename2, charset);
+			try (TextReader<T> reader = new TextReader<>(schema, new FileInputStream(file), charset)) {
+				try (TextWriter<T> writer = new TextWriter<>(schema, filename2, charset)) {
 
-			while (reader.hasNext()) {
-				T next = reader.next();
-				if (filter != null && filter.testEntity(next)) {
-					for (Entry<Column, Object> term : values.entrySet())
-						term.getKey().setValue(next, term.getValue());
+					while (reader.hasNext()) {
+						T next = reader.next();
+						if (filter != null && filter.testEntity(next)) {
+							for (Entry<Column, Object> term : values.entrySet())
+								term.getKey().setValue(next, term.getValue());
 
-					counter++;
+							counter++;
+						}
+						writer.write(next);
+					}
+
 				}
-				writer.write(next);
 			}
 
-			reader.close();
-			writer.close();
-
-			file.delete();
-			new File(filename2).renameTo(file);
+			Path filename1 = file.toPath();
+			Files.delete(filename1);
+			Files.move(Paths.get(filename2), filename1);
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 
 		return counter;

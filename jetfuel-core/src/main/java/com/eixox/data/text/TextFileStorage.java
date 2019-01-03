@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
+import com.eixox.JetfuelException;
 import com.eixox.data.ColumnSchema;
 import com.eixox.data.DataDelete;
 import com.eixox.data.DataSelect;
@@ -43,13 +44,14 @@ public class TextFileStorage<T> extends DataStorage<T> {
 		if (item == null)
 			return;
 		try {
-			FileOutputStream fos = new FileOutputStream(file, true);
-			TextWriter<T> writer = new TextWriter<T>(schema, fos, charset);
-			writer.write(item);
-			writer.close();
+			try (FileOutputStream fos = new FileOutputStream(file, true)) {
+				try (TextWriter<T> writer = new TextWriter<>(schema, fos, charset)) {
+					writer.write(item);
+				}
+			}
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -57,37 +59,37 @@ public class TextFileStorage<T> extends DataStorage<T> {
 	@Override
 	public synchronized void insert(T... items) {
 		try {
-			FileOutputStream fos = new FileOutputStream(file, true);
-			TextWriter<T> writer = new TextWriter<T>(schema, fos, charset);
-			for (int i = 0; i < items.length; i++)
-				writer.write(items[i]);
-			writer.close();
-
+			try (FileOutputStream fos = new FileOutputStream(file, true)) {
+				try (TextWriter<T> writer = new TextWriter<>(schema, fos, charset)) {
+					for (int i = 0; i < items.length; i++)
+						writer.write(items[i]);
+				}
+			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
 	@Override
 	public synchronized void insert(Iterator<T> iterator) {
 		try {
-			FileOutputStream fos = new FileOutputStream(file, true);
-			TextWriter<T> writer = new TextWriter<T>(schema, fos, charset);
-			while (iterator.hasNext())
-				writer.write(iterator.next());
-			writer.close();
-
+			try (FileOutputStream fos = new FileOutputStream(file, true)) {
+				try (TextWriter<T> writer = new TextWriter<>(schema, fos, charset)) {
+					while (iterator.hasNext())
+						writer.write(iterator.next());
+				}
+			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
 	@Override
 	public DataSelect<T> select() {
 		try {
-			return new TextFileSelect<T>(schema, new FileInputStream(file), charset);
+			return new TextFileSelect<>(schema, new FileInputStream(file), charset);
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 

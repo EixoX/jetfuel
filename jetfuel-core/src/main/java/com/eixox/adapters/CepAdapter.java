@@ -2,6 +2,7 @@ package com.eixox.adapters;
 
 public class CepAdapter extends IntegerAdapter {
 
+	@Override
 	public Integer parse(String source) {
 		if (source == null || source.isEmpty())
 			return 0;
@@ -9,6 +10,7 @@ public class CepAdapter extends IntegerAdapter {
 			return Integer.parseInt(source);
 	}
 
+	@Override
 	public String format(Integer source) {
 		if (source == null)
 			return "";

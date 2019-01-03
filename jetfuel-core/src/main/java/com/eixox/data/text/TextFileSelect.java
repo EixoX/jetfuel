@@ -3,6 +3,7 @@ package com.eixox.data.text;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger.Level;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.eixox.JetfuelException;
 import com.eixox.Visitor;
 import com.eixox.data.Column;
 import com.eixox.data.ColumnSchema;
@@ -47,26 +49,21 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 	@Override
 	public synchronized List<T> toList() {
 
-		ArrayList<T> list = new ArrayList<T>(limit > 0 ?
-				limit :
-				20);
+		ArrayList<T> list = new ArrayList<>(limit > 0
+				? limit
+				: 20);
 
-		int imax = limit > 0 ?
-				limit :
-				Integer.MAX_VALUE;
+		int imax = limit > 0
+				? limit
+				: Integer.MAX_VALUE;
 
-		TextReader<T> reader = new TextReader<T>(schema, input, charset);
-		reader.filter = this.filter;
-		reader.skip(offset);
-		// process the items;
-		for (int i = 0; i < imax && reader.hasNext(); i++)
-			list.add(reader.next());
-
-		// closes the reader;
-		try {
-			reader.close();
-		} catch (Exception e) {
-			// nothing to do
+		try (TextReader<T> reader = new TextReader<>(schema, input, charset)) {
+			reader.filter = this.filter;
+			reader.skip(offset);
+			for (int i = 0; i < imax && reader.hasNext(); i++)
+				list.add(reader.next());
+		} catch (IOException e) {
+			JetfuelException.log(this, Level.DEBUG, e);
 		}
 
 		if (sort != null)
@@ -84,22 +81,18 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 
 	@Override
 	public T first() {
-		TextReader<T> reader = new TextReader<T>(schema, input, charset);
-		reader.filter = this.filter;
-		reader.skip(offset);
+		try (TextReader<T> reader = new TextReader<>(schema, input, charset)) {
+			reader.filter = this.filter;
+			reader.skip(offset);
 
-		T item = reader.hasNext() ?
-				reader.next() :
-				null;
+			return reader.hasNext()
+					? reader.next()
+					: null;
 
-		// closes the reader;
-		try {
-			reader.close();
-		} catch (Exception e) {
-			// nothing to do
+		} catch (IOException e) {
+			throw new JetfuelException(e);
 		}
 
-		return item;
 	}
 
 	@Override
@@ -109,7 +102,7 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 			return null;
 
 		int s = schema.size();
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 		for (int i = 0; i < s; i++) {
 			Column column = schema.get(i);
 			String name = column.getColumnName();
@@ -121,7 +114,7 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 
 	@Override
 	public long count() {
-		TextReader<T> reader = new TextReader<T>(schema, input, charset);
+		TextReader<T> reader = new TextReader<>(schema, input, charset);
 		reader.filter = this.filter;
 		long counter = 0;
 		while (reader.hasNext())
@@ -136,7 +129,7 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 
 	@Override
 	public boolean exists() {
-		TextReader<T> reader = new TextReader<T>(schema, input, charset);
+		TextReader<T> reader = new TextReader<>(schema, input, charset);
 		reader.filter = this.filter;
 
 		boolean test = reader.hasNext();
@@ -152,14 +145,14 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 	@Override
 	public Object firstMember(Column column) {
 		T first = first();
-		return first == null ?
-				null :
-				column.getValue(first);
+		return first == null
+				? null
+				: column.getValue(first);
 	}
 
 	@Override
 	public List<Object> getMembers(Column column) {
-		ArrayList<Object> members = new ArrayList<Object>();
+		ArrayList<Object> members = new ArrayList<>();
 		for (T entity : toList())
 			members.add(column.getValue(entity));
 		return members;
@@ -175,32 +168,19 @@ public class TextFileSelect<T> extends DataSelect<T> implements Closeable, AutoC
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		try {
-			this.input.close();
-		} catch (Exception e) {
-		}
-	}
-
-	@Override
 	public void accept(Visitor<T> visitor) {
-		int imax = limit > 0 ?
-				limit :
-				Integer.MAX_VALUE;
+		int imax = limit > 0
+				? limit
+				: Integer.MAX_VALUE;
 
-		TextReader<T> reader = new TextReader<T>(schema, input, charset);
-		reader.filter = this.filter;
-		reader.skip(offset);
+		try (TextReader<T> reader = new TextReader<>(schema, input, charset)) {
+			reader.filter = this.filter;
+			reader.skip(offset);
+			for (int i = 0; i < imax && reader.hasNext(); i++)
+				visitor.visit(reader.next());
 
-		// process the items;
-		for (int i = 0; i < imax && reader.hasNext(); i++)
-			visitor.visit(reader.next());
-
-		// closes the reader;
-		try {
-			reader.close();
-		} catch (Exception e) {
-			// nothing to do
+		} catch (IOException e) {
+			throw new JetfuelException(e);
 		}
 
 	}

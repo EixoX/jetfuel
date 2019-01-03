@@ -3,7 +3,11 @@ package com.eixox.data.text;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import com.eixox.JetfuelException;
 import com.eixox.data.ColumnSchema;
 import com.eixox.data.DataDelete;
 
@@ -47,25 +51,25 @@ public class TextFileDelete<T> extends DataDelete {
 		try {
 
 			String filename2 = file.getCanonicalPath() + ".tmp";
-			TextReader<T> reader = new TextReader<T>(schema, new FileInputStream(file), charset);
-			TextWriter<T> writer = new TextWriter<T>(schema, filename2, charset);
+			try (TextReader<T> reader = new TextReader<>(schema, new FileInputStream(file), charset)) {
+				try (TextWriter<T> writer = new TextWriter<>(schema, filename2, charset)) {
+					while (reader.hasNext()) {
+						T next = reader.next();
+						if (filter != null && !filter.testEntity(next))
+							writer.write(next);
+						else
+							counter++;
+					}
 
-			while (reader.hasNext()) {
-				T next = reader.next();
-				if (filter != null && !filter.testEntity(next))
-					writer.write(next);
-				else
-					counter++;
+				}
 			}
 
-			reader.close();
-			writer.close();
-
-			file.delete();
-			new File(filename2).renameTo(file);
+			Path filename1 = file.toPath();
+			Files.delete(filename1);
+			Files.move(Paths.get(filename2), filename1);
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 
 		return counter;

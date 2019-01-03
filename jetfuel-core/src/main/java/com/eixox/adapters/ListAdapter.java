@@ -3,7 +3,10 @@ package com.eixox.adapters;
 import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
+
+import com.eixox.JetfuelException;
 
 /**
  * A class responsible for adapting lists;
@@ -58,9 +61,9 @@ public class ListAdapter<T> extends Adapter<List<T>> {
 	 */
 	public List<T> newList() {
 		try {
-			return (List<T>) dataType.getConstructor().newInstance();
+			return dataType.getConstructor().newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -73,7 +76,7 @@ public class ListAdapter<T> extends Adapter<List<T>> {
 	 */
 	public List<T> parse(String source, String regex) {
 		if (source == null)
-			return null;
+			return Collections.emptyList();
 
 		String[] spl = source.split(regex);
 		List<T> list = newList();

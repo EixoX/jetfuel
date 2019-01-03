@@ -4,14 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.System.Logger;
 import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
@@ -41,6 +42,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.eixox.JetfuelException;
 import com.eixox.security.X509CertificateKeySelector;
 import com.eixox.security.X509CertificateWithKey;
 
@@ -70,9 +72,11 @@ public class XmlSignatureHandler {
 		this.builderFactory = DocumentBuilderFactory.newInstance();
 		this.builderFactory.setNamespaceAware(true);
 		this.transformerFactory = TransformerFactory.newInstance();
+		this.transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		this.transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 		this.signatureFactory = XMLSignatureFactory.getInstance("DOM");
 		this.digestMethod = signatureFactory.newDigestMethod(DigestMethod.SHA1, null);
-		this.transformList = new ArrayList<Transform>(2);
+		this.transformList = new ArrayList<>(2);
 
 		this.transformList.add(
 				signatureFactory.newTransform(
@@ -95,11 +99,10 @@ public class XmlSignatureHandler {
 
 	public synchronized void sign()
 			throws MarshalException,
-			XMLSignatureException,
-			KeyException {
+			XMLSignatureException {
 
 		if (this.document == null)
-			throw new RuntimeException("Can't sign a NULL document");
+			throw new JetfuelException("Can't sign a NULL document");
 
 		Reference reference = this.signatureFactory.newReference(
 				referenceUri,
@@ -145,7 +148,7 @@ public class XmlSignatureHandler {
 		// Find Signature element.
 		NodeList list = document.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
 		if (list.getLength() == 0) {
-			throw new RuntimeException("Cannot find Signature element");
+			throw new JetfuelException("Cannot find Signature element");
 		}
 
 		// Create a DOMValidateContext and specify a KeySelector
@@ -160,16 +163,24 @@ public class XmlSignatureHandler {
 			return true;
 		} else {
 			Iterator<?> i = signature.getSignedInfo().getReferences().iterator();
+			Logger logger = System.getLogger(getClass().getName());
 			for (int j = 0; i.hasNext(); j++) {
-				System.out.print("ref[" + j + "] -> ");
 				Reference ref = (Reference) i.next();
-				System.out.print(ref.getURI());
-				System.out.print(", ");
-				System.out.print(ref.getDigestMethod().toString());
-				System.out.print(", ");
-				System.out.print(ref.getId());
 				boolean refValid = ref.validate(validateContext);
-				System.out.print(", validity status: " + refValid + "\r\n");
+				logger.log(
+						System.Logger.Level.TRACE,
+						"ref[" +
+								j +
+								"] -> " +
+								ref.getURI() +
+								", " +
+								ref.getDigestMethod().toString() +
+								", " +
+								ref.getId() +
+								", validity status: " +
+								refValid +
+								"\r\n");
+
 			}
 			return false;
 		}

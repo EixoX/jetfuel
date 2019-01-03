@@ -19,7 +19,7 @@ public class X509TrustManager implements javax.net.ssl.X509TrustManager {
 
 	public X509Certificate[] getAcceptedIssuers() {
 		// do nothing
-		return null;
+		return new X509Certificate[0];
 	}
 
 }

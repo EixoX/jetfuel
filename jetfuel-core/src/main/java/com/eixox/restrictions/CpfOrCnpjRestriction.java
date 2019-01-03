@@ -5,7 +5,7 @@ public class CpfOrCnpjRestriction implements Restriction {
 	public CpfOrCnpjRestriction() {
 	}
 
-	public CpfOrCnpjRestriction(CpfOrCnpj CpfOrCnpj) {
+	public CpfOrCnpjRestriction(CpfOrCnpj cpfOrCnpj) {
 		// just complying to a constructor pattern.
 	}
 
@@ -24,15 +24,15 @@ public class CpfOrCnpjRestriction implements Restriction {
 				return isValid(Long.parseLong(is))
 						? new RestrictionResult(true, "")
 						: new RestrictionResult(false, "N�o � um CPF ou CNPJ v�lido.");
-		} else if (input instanceof Number)
+		} else if (input instanceof Number) {
 			return isValid(((Number) input).longValue())
 					? new RestrictionResult(true, "")
 					: new RestrictionResult(false, "N�o � um CPF ou CNPJ v�lido.");
-
-		else
+		} else {
 			return new RestrictionResult(false, "N�o foi poss�vel converter para um CPF ou CNPJ.");
+		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "CpfOrCnpj()";

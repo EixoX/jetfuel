@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.eixox.JetfuelException;
 import com.eixox.adapters.Adapter;
 
 /**
@@ -48,8 +49,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @return
 	 * @throws Exception
 	 */
-	protected abstract G decorate(Field field)
-			throws Exception;
+	protected abstract G decorate(Field field);
 
 	/**
 	 * Indicates that a given field is decoratable (default = is public AND is not
@@ -73,7 +73,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 */
 	public Aspect(Class<T> dataType) {
 		this.dataType = dataType;
-		this.members = new ArrayList<G>();
+		this.members = new ArrayList<>();
 
 		if (decoratesFields()) {
 			Field[] fields = dataType.getFields();
@@ -85,7 +85,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 						if (child != null)
 							members.add(child);
 					} catch (Exception ex) {
-						throw new RuntimeException(
+						throw new JetfuelException(
 								"Trouble decorating " + fields[i].getName() + " in class " + dataType, ex);
 					}
 			}
@@ -99,7 +99,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param name
 	 * @return
 	 */
-	public synchronized final int indexOf(String name) {
+	public final synchronized int indexOf(String name) {
 		int s = members.size();
 		for (int i = 0; i < s; i++)
 			if (name.equalsIgnoreCase(members.get(i).name))
@@ -113,7 +113,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param index
 	 * @return
 	 */
-	public synchronized final G get(int index) {
+	public final synchronized G get(int index) {
 		return this.members.get(index);
 	}
 
@@ -123,7 +123,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param index
 	 * @return
 	 */
-	public synchronized final String getName(int index) {
+	public final synchronized String getName(int index) {
 		return this.members.get(index).name;
 	}
 
@@ -133,7 +133,8 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param index
 	 * @return
 	 */
-	public synchronized final Adapter<?> getAdapter(int index) {
+	@SuppressWarnings("rawtypes")
+	public final synchronized Adapter getAdapter(int index) {
 		return this.members.get(index).adapter;
 	}
 
@@ -143,10 +144,10 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param name
 	 * @return
 	 */
-	public synchronized final G get(String name) {
+	public final synchronized G get(String name) {
 		int index = indexOf(name);
 		if (index < 0)
-			throw new RuntimeException(name + " not found on " + dataType);
+			throw new JetfuelException(name + " not found on " + dataType);
 		else
 			return members.get(index);
 	}
@@ -158,7 +159,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param index
 	 * @return
 	 */
-	public synchronized final Object getValue(T entity, int index) {
+	public final synchronized Object getValue(T entity, int index) {
 		return members.get(index).getValue(entity);
 	}
 
@@ -169,7 +170,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param name
 	 * @return
 	 */
-	public synchronized final Object getValue(T entity, String name) {
+	public final synchronized Object getValue(T entity, String name) {
 		return get(name).getValue(entity);
 	}
 
@@ -180,7 +181,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param index
 	 * @param value
 	 */
-	public synchronized final void setValue(T entity, int index, Object value) {
+	public final synchronized void setValue(T entity, int index, Object value) {
 		members.get(index).setValue(entity, value);
 	}
 
@@ -191,7 +192,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param name
 	 * @param value
 	 */
-	public synchronized final void setValue(T entity, String name, Object value) {
+	public final synchronized void setValue(T entity, String name, Object value) {
 		get(name).setValue(entity, value);
 	}
 
@@ -201,8 +202,8 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param entity
 	 * @return
 	 */
-	public synchronized final Map<String, Object> getValues(T entity) {
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+	public final synchronized Map<String, Object> getValues(T entity) {
+		LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 		for (G member : members)
 			map.put(member.name, member.getValue(entity));
 		return map;
@@ -215,7 +216,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 	 * @param map
 	 * @return
 	 */
-	public synchronized final int setValues(T entity, Map<String, Object> map) {
+	public final synchronized int setValues(T entity, Map<String, Object> map) {
 		int counter = 0;
 		for (Entry<String, Object> entry : map.entrySet()) {
 			int ordinal = indexOf(entry.getKey());
@@ -236,7 +237,7 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 		try {
 			return this.dataType.getConstructor().newInstance();
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			throw new JetfuelException(ex);
 		}
 	}
 
@@ -276,8 +277,8 @@ public abstract class Aspect<T, G extends AspectMember> implements Iterable<G> {
 					break;
 				}
 			}
-			if (ignoreMissingFields == false && foundFields[i] == null)
-				throw new RuntimeException(fieldNames[i] + " is not a field on " + dataType);
+			if (!ignoreMissingFields && foundFields[i] == null)
+				throw new JetfuelException(fieldNames[i] + " is not a field on " + dataType);
 		}
 
 		return foundFields;

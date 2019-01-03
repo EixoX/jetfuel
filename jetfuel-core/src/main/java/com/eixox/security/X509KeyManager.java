@@ -36,7 +36,7 @@ public class X509KeyManager implements javax.net.ssl.X509KeyManager {
 	}
 
 	public String[] getServerAliases(String arg0, Principal[] arg1) {
-		return null;
+		return new String[0];
 	}
 
 }

@@ -3,6 +3,7 @@ package com.eixox.usecases;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.System.Logger.Level;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,6 +19,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.eixox.JetfuelException;
 import com.eixox.adapters.StringAdapter;
 import com.eixox.xml.XmlAspect;
 
@@ -49,8 +51,7 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 
 	/**
 	 * Creates the soap element wrapper and appends it to the document; Override
-	 * this method to implement specific soap versions; Defaults to
-	 * soapenv:Envelop;
+	 * this method to implement specific soap versions; Defaults to soapenv:Envelop;
 	 * 
 	 * @param document
 	 * @return
@@ -94,7 +95,7 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 	 * @param soapHeader
 	 * @param execution
 	 */
-	protected void processResponseHeader(Element soapHeader, UsecaseExecution<TParams, TResult> execution) throws Exception {
+	protected void processResponseHeader(Element soapHeader, UsecaseExecution<TParams, TResult> execution) {
 
 	}
 
@@ -106,7 +107,7 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	protected void processResponseBody(Element soapBody, UsecaseExecution<TParams, TResult> execution) throws Exception {
+	protected void processResponseBody(Element soapBody, UsecaseExecution<TParams, TResult> execution) {
 		XmlAspect<TResult> xmlAspect = XmlAspect.getInstance(getResultClass());
 
 		NodeList resultList = soapBody.getElementsByTagName(xmlAspect.xmlName);
@@ -126,7 +127,6 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 
 		DocumentBuilder documentBuilder = BUILDER_FACTORY.newDocumentBuilder();
 
-		// Builds the entire request xml;
 		Document xmlrequest = documentBuilder.newDocument();
 		Element xmlenvelope = createEnvelopeElement(xmlrequest);
 		Element xmlheader = createHeaderElement(xmlenvelope);
@@ -141,10 +141,13 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 		XmlAspect.getInstance(getParamsClass()).format(execution.params, xmlbody);
 
 		// debugging
-		if (is_debugging)
-			System.out.println(new StringAdapter().convertXml(xmlrequest));
+		if (is_debugging) {
+			System.getLogger(
+					getClass().getName()).log(
+							System.Logger.Level.TRACE,
+							new StringAdapter().convertXml(xmlrequest));
+		}
 
-		// Sends the document to output;
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
@@ -170,7 +173,7 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 
 			// Debugging
 			if (is_debugging)
-				System.out.println(new StringAdapter().convertXml(xmlresponse));
+				JetfuelException.log(this, Level.DEBUG, new StringAdapter().convertXml(xmlresponse), null);
 
 			isReader.close();
 			inputStream.close();
@@ -187,11 +190,14 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 				return;
 			}
 
-			// Processes the response xml;
 			processResponseBody((Element) bodyList.item(0), execution);
 
 		} catch (IOException ioe) {
-			System.out.println(new StringAdapter().convertStream(connection.getErrorStream()));
+			System.getLogger(
+					getClass().getName())
+					.log(System.Logger.Level.TRACE,
+							new StringAdapter()
+									.convertStream(connection.getErrorStream()));
 			execution.exception = ioe;
 			execution.result_type = UsecaseResultType.EXECUTION_FAILED;
 		}

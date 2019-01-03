@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
  */
 public class CsvAspect<T> extends TextAspect<T, CsvAspectField> {
 
-	private int[] field_ordinals;
+	private int[] fieldOrdinals;
 	public boolean first_row_has_names = true;
 	public String separator = "\t";
 	public boolean ignore_blank_lines = true;
@@ -50,22 +50,23 @@ public class CsvAspect<T> extends TextAspect<T, CsvAspectField> {
 			return null;
 
 		// Is it supposed to filter by column names
-		if (this.field_ordinals == null) {
+		if (this.fieldOrdinals == null) {
 			if (this.first_row_has_names) {
-				field_ordinals = new int[cells.length];
-				for (int i = 0; i < field_ordinals.length; i++)
-					field_ordinals[i] = indexOfColumnName(cells[i]);
+				fieldOrdinals = new int[cells.length];
+				for (int i = 0; i < fieldOrdinals.length; i++)
+					fieldOrdinals[i] = indexOfColumnName(cells[i]);
 				return null;
-			} else
-				this.field_ordinals = new int[0];
+			} else {
+				this.fieldOrdinals = new int[0];
+			}
 		}
 
 		// Read from the line as indexed by the first row
-		if (field_ordinals.length > 0) {
+		if (fieldOrdinals.length > 0) {
 			T e1 = newInstance();
-			for (int i = 0; i < field_ordinals.length; i++)
-				if (field_ordinals[i] >= 0 && i < cells.length)
-					get(field_ordinals[i]).setValue(e1, cells[i]);
+			for (int i = 0; i < fieldOrdinals.length; i++)
+				if (fieldOrdinals[i] >= 0 && i < cells.length)
+					get(fieldOrdinals[i]).setValue(e1, cells[i]);
 			return e1;
 		}
 		// Raw read from the current line

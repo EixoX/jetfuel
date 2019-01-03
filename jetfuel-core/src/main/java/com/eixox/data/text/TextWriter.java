@@ -1,5 +1,6 @@
 package com.eixox.data.text;
 
+import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A generic text data reader that reads one line at a time.
@@ -14,9 +16,9 @@ import java.nio.charset.Charset;
  * @author Rodrigo Portela
  *
  */
-public class TextWriter<T> implements AutoCloseable, Cloneable {
+public class TextWriter<T> implements AutoCloseable, Closeable {
 
-	public static final char[] NEW_LINE = new char[] { 13, 10 };
+	protected static final char[] NEW_LINE = new char[] { 13, 10 };
 
 	/**
 	 * The text schema that parses lines.
@@ -29,17 +31,17 @@ public class TextWriter<T> implements AutoCloseable, Cloneable {
 	/**
 	 * The current line number;
 	 */
-	private int line_number;
+	private int lineNumber;
 	/**
 	 * The current line content;
 	 */
-	private String line_content;
+	private String lineContent;
 
 	/**
 	 * Enabled child classes to do further initialization work;
 	 */
 	protected void initialize() {
-
+		// Add initialization logic here if you want to.
 	}
 
 	/**
@@ -72,7 +74,7 @@ public class TextWriter<T> implements AutoCloseable, Cloneable {
 	 * @param os
 	 */
 	public TextWriter(TextSchema<T, ?> schema, OutputStream os) {
-		this(schema, os, Charset.forName("UTF-8"));
+		this(schema, os, StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -95,7 +97,7 @@ public class TextWriter<T> implements AutoCloseable, Cloneable {
 	 * @throws FileNotFoundException
 	 */
 	public TextWriter(TextSchema<T, ?> schema, String path) throws FileNotFoundException {
-		this(schema, path, Charset.forName("UTF-8"));
+		this(schema, path, StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -104,7 +106,7 @@ public class TextWriter<T> implements AutoCloseable, Cloneable {
 	 * @return
 	 */
 	public final int getLineNumber() {
-		return this.line_number;
+		return this.lineNumber;
 	}
 
 	/**
@@ -113,28 +115,28 @@ public class TextWriter<T> implements AutoCloseable, Cloneable {
 	 * @return
 	 */
 	public final String getLineContent() {
-		return this.line_content;
+		return this.lineContent;
 	}
 
 	/**
-	 * Attempts to read the underlying buffered reader and parse the contents of
-	 * the line.
+	 * Attempts to read the underlying buffered reader and parse the contents of the
+	 * line.
 	 * 
 	 * @return
 	 * @throws IOException
 	 */
-	public synchronized final void write(T entity) throws IOException {
-		this.line_content = this.schema.format(entity);
-		this.writer.write(this.line_content);
+	public final synchronized void write(T entity) throws IOException {
+		this.lineContent = this.schema.format(entity);
+		this.writer.write(this.lineContent);
 		this.writer.write(NEW_LINE);
-		this.line_number++;
+		this.lineNumber++;
 
 	}
 
 	/**
 	 * Closes the underlying buffered reader.
 	 */
-	public void close() throws Exception {
+	public void close() throws IOException {
 		this.writer.close();
 	}
 

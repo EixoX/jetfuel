@@ -155,7 +155,7 @@ public class XmlDocumentAdapter extends Adapter<Document> {
 
 	public Map<String, Object> toMap(Node node) {
 
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Map<String, Object> map = new LinkedHashMap<>();
 		for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling())
 			if (child.getNodeType() == Node.ATTRIBUTE_NODE || child.getNodeType() == Node.ELEMENT_NODE)
 				toMap(map, child);
@@ -164,23 +164,20 @@ public class XmlDocumentAdapter extends Adapter<Document> {
 	}
 
 	public void toMap(Map<String, Object> parent, Node node) {
-		switch (node.getNodeType()) {
-		case Node.ATTRIBUTE_NODE:
+		short nodeType = node.getNodeType();
+		if (nodeType == Node.ATTRIBUTE_NODE) {
 			parent.put(node.getNodeName(), node.getNodeValue());
-			break;
-		case Node.ELEMENT_NODE:
+		} else if (nodeType == Node.ELEMENT_NODE) {
 			boolean isSimple = true;
 			for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling())
 				if (child.getNodeType() == Node.ELEMENT_NODE) {
 					isSimple = false;
 					break;
 				}
-
 			if (isSimple)
 				parent.put(node.getNodeName(), node.getTextContent());
 			else
 				parent.put(node.getNodeName(), toMap(node));
-			break;
 		}
 	}
 

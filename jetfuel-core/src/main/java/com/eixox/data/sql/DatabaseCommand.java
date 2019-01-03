@@ -14,8 +14,11 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -23,7 +26,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Node;
 
-import com.eixox.data.Column;
+import com.eixox.JetfuelException;
 import com.eixox.data.ColumnSchema;
 import com.eixox.data.DataAspect;
 import com.eixox.data.Filter;
@@ -34,7 +37,7 @@ import com.eixox.data.SortExpression;
 import com.eixox.data.SortNode;
 
 /**
- * A generic sql command executor;
+ * A generic SQL command executor;
  * 
  * @author Rodrigo Portela
  *
@@ -49,20 +52,31 @@ public class DatabaseCommand {
 	/**
 	 * The command parameters;
 	 */
-	public final ArrayList<Object> parameters = new ArrayList<Object>();
+	public final List<Object> parameters = new ArrayList<>();
 
 	/**
-	 * The database to use this sql command on;
+	 * The database to use this SQL command on;
 	 */
 	public final Database database;
 
 	/**
-	 * Creates a new instance of the sql command;
+	 * Creates a new instance of the SQL command;
 	 * 
 	 * @param database
 	 */
 	public DatabaseCommand(Database database) {
 		this.database = database;
+	}
+
+	/**
+	 * Creates a new jet fuel exception to avoid duplication code and standardizing
+	 * content;
+	 * 
+	 * @param e
+	 * @return
+	 */
+	private JetfuelException createException(Exception e) {
+		return new JetfuelException(e.getMessage() + " on =>" + this.text.toString(), e);
 	}
 
 	/**
@@ -106,7 +120,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
+			throw createException(e);
 		}
 	}
 
@@ -151,7 +165,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
+			throw createException(e);
 		}
 	}
 
@@ -165,33 +179,21 @@ public class DatabaseCommand {
 	 * @throws SQLException
 	 */
 	public final <T> T executeQuery(Connection conn, ResultsetProcessor<T> processor) throws SQLException {
-		// System.out.println(text.toString());
+
 		if (parameters.isEmpty()) {
-			Statement stm = conn.createStatement();
-			stm.setFetchSize(2000);
-			try {
-				ResultSet rs = stm.executeQuery(text.toString());
-				try {
+			try (Statement stm = conn.createStatement()) {
+				stm.setFetchSize(2000);
+				try (ResultSet rs = stm.executeQuery(text.toString())) {
 					return processor.process(rs);
-				} finally {
-					rs.close();
 				}
-			} finally {
-				stm.close();
 			}
 		} else {
-			PreparedStatement ps = conn.prepareStatement(this.text.toString());
-			try {
+			try (PreparedStatement ps = conn.prepareStatement(this.text.toString())) {
 				for (int i = 0; i < parameters.size(); i++)
 					ps.setObject(i + 1, parameters.get(i));
-				ResultSet rs = ps.executeQuery(text.toString());
-				try {
+				try (ResultSet rs = ps.executeQuery(text.toString())) {
 					return processor.process(rs);
-				} finally {
-					rs.close();
 				}
-			} finally {
-				ps.close();
 			}
 		}
 	}
@@ -212,7 +214,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e.getMessage() + " on " + this.text.toString(), e);
+			throw createException(e);
 		}
 	}
 
@@ -224,7 +226,7 @@ public class DatabaseCommand {
 	 * @return
 	 * @throws SQLException
 	 */
-	public final <T> ArrayList<T> executeQuery(Connection conn, DataAspect<T, ?> aspect) throws SQLException {
+	public final <T> List<T> executeQuery(Connection conn, DataAspect<T, ?> aspect) throws SQLException {
 		return executeQuery(conn, new ResultsetToArrayList<T>(aspect));
 	}
 
@@ -236,7 +238,7 @@ public class DatabaseCommand {
 	 * @return
 	 * @throws SQLException
 	 */
-	public final <T> ArrayList<T> executeQuery(Connection conn, Class<T> claz) throws SQLException {
+	public final <T> List<T> executeQuery(Connection conn, Class<T> claz) throws SQLException {
 		return executeQuery(conn, DatabaseAspect.getInstance(claz));
 	}
 
@@ -246,7 +248,7 @@ public class DatabaseCommand {
 	 * @param claz
 	 * @return
 	 */
-	public final <T> ArrayList<T> executeQuery(Class<T> claz) {
+	public final <T> List<T> executeQuery(Class<T> claz) {
 		return executeQuery(DatabaseAspect.getInstance(claz));
 	}
 
@@ -256,7 +258,7 @@ public class DatabaseCommand {
 	 * @param aspect
 	 * @return
 	 */
-	public final <T> ArrayList<T> executeQuery(DataAspect<T, ?> aspect) {
+	public final <T> List<T> executeQuery(DataAspect<T, ?> aspect) {
 		return executeQuery(new ResultsetToArrayList<T>(aspect));
 	}
 
@@ -269,15 +271,15 @@ public class DatabaseCommand {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Object executeInsertAndScopeIdentity(Connection conn, Column identity) throws SQLException {
-		// System.out.println(text.toString());
+	public Object executeInsertAndScopeIdentity(Connection conn) throws SQLException {
+
 		if (parameters.isEmpty()) {
 			Statement stm = conn.createStatement();
 			try {
 				stm.execute(text.toString(), Statement.RETURN_GENERATED_KEYS);
 				ResultSet generatedKeys = stm.getGeneratedKeys();
 				try {
-					return database.readIdentity(generatedKeys, identity);
+					return database.readIdentity(generatedKeys);
 				} finally {
 					generatedKeys.close();
 				}
@@ -292,7 +294,7 @@ public class DatabaseCommand {
 				ps.execute();
 				ResultSet generatedKeys = ps.getGeneratedKeys();
 				try {
-					return database.readIdentity(generatedKeys, identity);
+					return database.readIdentity(generatedKeys);
 				} finally {
 					generatedKeys.close();
 				}
@@ -309,16 +311,16 @@ public class DatabaseCommand {
 	 * @param identity
 	 * @return
 	 */
-	public final Object executeInsertAndScopeIdentity(Column identity) {
+	public final Object executeInsertAndScopeIdentity() {
 		try {
 			Connection conn = database.popConnection();
 			try {
-				return executeInsertAndScopeIdentity(conn, identity);
+				return executeInsertAndScopeIdentity(conn);
 			} finally {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
+			throw createException(e);
 		}
 	}
 
@@ -332,7 +334,6 @@ public class DatabaseCommand {
 	 * @throws SQLException
 	 */
 	public final int executeInsert(Connection conn, ResultsetProcessor<?> generatedKeysProcessor) throws SQLException {
-		// System.out.println(text.toString());
 		if (parameters.isEmpty()) {
 			Statement stm = conn.createStatement();
 			try {
@@ -384,7 +385,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
+			throw createException(e);
 		}
 	}
 
@@ -445,7 +446,7 @@ public class DatabaseCommand {
 				database.pushConnection(conn);
 			}
 		} catch (SQLException e) {
-			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
+			throw createException(e);
 		}
 	}
 
@@ -622,11 +623,15 @@ public class DatabaseCommand {
 		StreamResult result = new StreamResult(writer);
 		DOMSource source = new DOMSource(value);
 		try {
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			TransformerFactory factory = TransformerFactory.newInstance();
+			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+			Transformer transformer = factory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.transform(source, result);
 			appendString(writer.toString());
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage() + " on =>" + this.text.toString(), e);
+			throw createException(e);
 		}
 		return this;
 	}
@@ -642,12 +647,10 @@ public class DatabaseCommand {
 		int stringLength = value.length();
 		for (int i = 0; i < stringLength; ++i) {
 			char c = value.charAt(i);
-			switch (c) {
-			case '\'':
+			if (c == '\'') {
 				this.text.append('\'');
 				this.text.append('\'');
-				break;
-			default:
+			} else {
 				this.text.append(c);
 			}
 		}
@@ -662,13 +665,13 @@ public class DatabaseCommand {
 	 * @return
 	 */
 	public DatabaseCommand appendByteArray(byte[] value) {
-		throw new RuntimeException(
+		throw new JetfuelException(
 				"Byte array serialization to SQL not implemented for command on " + database.getClass());
 	}
 
 	/**
 	 * Appends the given value to the underlying command or throws a
-	 * RuntimeException if unable to serialize the value to SQL;
+	 * JetfuelException if unable to serialize the value to SQL;
 	 * 
 	 * @param value
 	 * @return
@@ -709,7 +712,7 @@ public class DatabaseCommand {
 		if (value instanceof Character)
 			return appendString(value.toString());
 
-		throw new RuntimeException("Can't serialize to SQL: " + value.getClass());
+		throw new JetfuelException("Can't serialize to SQL: " + value.getClass());
 	}
 
 	/**
@@ -748,7 +751,7 @@ public class DatabaseCommand {
 
 	/**
 	 * Appends the values as comma separated list of SQL or throws a
-	 * RuntimeException if the object can't be converted to an Array or Iterable;
+	 * JetfuelException if the object can't be converted to an Array or Iterable;
 	 * 
 	 * @param col
 	 */
@@ -762,11 +765,10 @@ public class DatabaseCommand {
 		if (col.getClass().isArray())
 			return appendValuesArray(col);
 
-		// append iterable;
 		if (Iterable.class.isAssignableFrom(col.getClass()))
 			return appendValues((Iterable<?>) col);
 
-		throw new RuntimeException("Can't convert " + col.getClass() + " to Array or Iterable");
+		throw new JetfuelException("Can't convert " + col.getClass() + " to Array or Iterable");
 	}
 
 	/**
@@ -962,7 +964,7 @@ public class DatabaseCommand {
 					appendFilter(node.next);
 					break;
 				default:
-					throw new RuntimeException("Unknwon filter operation " + node.operation);
+					throw new JetfuelException("Unknwon filter operation " + node.operation);
 				}
 			}
 			break;
@@ -992,10 +994,10 @@ public class DatabaseCommand {
 			case CONTAINS:
 				return appendContains(term.column.getColumnName(), term.value);
 			default:
-				throw new RuntimeException("Unknown filter comparison " + term.comparison);
+				throw new JetfuelException("Unknown filter comparison " + term.comparison);
 			}
 		default:
-			throw new RuntimeException("Unknwon filter type " + filter.getFilterType());
+			throw new JetfuelException("Unknwon filter type " + filter.getFilterType());
 
 		}
 		return this;
@@ -1039,7 +1041,7 @@ public class DatabaseCommand {
 					this.text.append(" DESC");
 					break;
 				default:
-					throw new RuntimeException("Unknown sort direction " + node.direction);
+					throw new JetfuelException("Unknown sort direction " + node.direction);
 				}
 
 			}

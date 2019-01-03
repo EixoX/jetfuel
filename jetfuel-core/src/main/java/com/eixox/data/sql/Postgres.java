@@ -6,18 +6,12 @@ public class Postgres extends Database {
 
 	public Postgres(String url, Properties properties) {
 		super(url, properties);
-		try {
-			Class.forName("org.postgresql.Driver");
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	@Override
 	public DatabaseCommand createCommand() {
 		return new PostgresCommand(this);
 	}
-	
 
 	@Override
 	public final char getNamePrefix() {

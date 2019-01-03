@@ -120,7 +120,6 @@ public class TextReader<T> implements AutoCloseable, Closeable, Iterable<T>, Ite
 			else
 				return true;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return false;
 		}
 
@@ -145,9 +144,9 @@ public class TextReader<T> implements AutoCloseable, Closeable, Iterable<T>, Ite
 	 * 
 	 * @param record_count
 	 */
-	public int skip(int record_count) {
+	public int skip(int recordCount) {
 		int i = 0;
-		while (i < record_count && hasNext())
+		while (i < recordCount && hasNext())
 			i++;
 		return i;
 	}

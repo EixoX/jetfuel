@@ -14,6 +14,8 @@ import java.util.UUID;
 
 import org.w3c.dom.Document;
 
+import com.eixox.JetfuelException;
+
 /**
  * Adapts a source object to a specific data type;
  * 
@@ -53,7 +55,7 @@ public abstract class Adapter<T> {
 	 * @return
 	 */
 	public T parse(String source) {
-		throw new RuntimeException("Parse is not implemented for " + dataType);
+		throw new JetfuelException("Parse is not implemented for " + dataType);
 	}
 
 	/**
@@ -64,7 +66,7 @@ public abstract class Adapter<T> {
 	 * @return
 	 */
 	protected T changeType(Class<?> sourceClass, Object source) {
-		throw new RuntimeException("Can't convert " + sourceClass + " to " + dataType);
+		throw new JetfuelException("Can't convert " + sourceClass + " to " + dataType);
 	}
 
 	/**
@@ -108,9 +110,9 @@ public abstract class Adapter<T> {
 	 * @return
 	 */
 	public String format(T source) {
-		return source == null ?
-				"" :
-				source.toString();
+		return source == null
+				? ""
+				: source.toString();
 	}
 
 	/**
@@ -129,7 +131,7 @@ public abstract class Adapter<T> {
 	 */
 	private static final LinkedHashMap<Class<?>, Class<?>> ADAPTERS;
 	static {
-		ADAPTERS = new LinkedHashMap<Class<?>, Class<?>>();
+		ADAPTERS = new LinkedHashMap<>();
 		ADAPTERS.put(Boolean.TYPE, BooleanAdapter.class);
 		ADAPTERS.put(Boolean.class, BooleanAdapter.class);
 		ADAPTERS.put(Byte.TYPE, ByteAdapter.class);
@@ -171,7 +173,7 @@ public abstract class Adapter<T> {
 			Adapter<?> instance = adapter.getConstructor().newInstance();
 			ADAPTERS.put(instance.dataType, adapter);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -191,7 +193,7 @@ public abstract class Adapter<T> {
 			try {
 				return (Adapter<T>) adapterClass.getConstructor().newInstance();
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw new JetfuelException(e);
 			}
 		else if (dataType.isArray())
 			return new ArrayAdapter(dataType);
@@ -223,10 +225,10 @@ public abstract class Adapter<T> {
 			try {
 				annotatedAdapter = adapterClass.getConstructor().newInstance();
 			} catch (Exception ex) {
-				throw new RuntimeException(ex);
+				throw new JetfuelException(ex);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 
 		// is it a direct match?
@@ -256,7 +258,7 @@ public abstract class Adapter<T> {
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static synchronized final Adapter<?> getInstance(Field field) {
+	public static final synchronized Adapter getInstance(Field field) {
 
 		Class<?> fieldType = field.getType();
 
@@ -271,7 +273,7 @@ public abstract class Adapter<T> {
 			try {
 				return (Adapter<?>) adapterClass.getConstructor().newInstance();
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw new JetfuelException(e);
 			}
 
 		// Is it an array?
@@ -287,12 +289,11 @@ public abstract class Adapter<T> {
 			try {
 				return new ListAdapter(fieldType, (ParameterizedType) field.getGenericType());
 			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
+				throw new JetfuelException(e);
 			}
-
-		// No adapter found;
-		else
+		else {
 			return null;
+		}
 	}
 
 	/**
@@ -303,7 +304,7 @@ public abstract class Adapter<T> {
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static synchronized final Adapter<?> getInstance(Method method) {
+	public static final synchronized Adapter getInstance(Method method) {
 
 		Class<?> methodType = method.getReturnType();
 
@@ -318,7 +319,7 @@ public abstract class Adapter<T> {
 			try {
 				return (Adapter<?>) adapterClass.getConstructor().newInstance();
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw new JetfuelException(e);
 			}
 
 		// Is it an array?
@@ -330,14 +331,13 @@ public abstract class Adapter<T> {
 			try {
 				return new ListAdapter(methodType, (ParameterizedType) method.getGenericReturnType());
 			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
+				throw new JetfuelException(e);
 			}
 
 		// Is it an enum?
 		else if (Enum.class.isAssignableFrom(methodType))
 			return new EnumAdapter(methodType);
 
-		// No adapter found;
 		else
 			return null;
 	}

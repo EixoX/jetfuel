@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
+import com.eixox.JetfuelException;
 import com.eixox.adapters.Adapter;
 
 /**
@@ -27,14 +28,14 @@ public class XmlTextAdapter<T> implements XmlAdapter<T> {
 	 */
 	public XmlTextAdapter(Adapter<T> componentAdapter) {
 		if (componentAdapter == null)
-			throw new RuntimeException("The component adapter cannot be null");
+			throw new JetfuelException("The component adapter cannot be null");
 		this.componentAdapter = componentAdapter;
 
 	}
 
 	/**
-	 * Parses the text content of the given node as the data type of this
-	 * component adapter;
+	 * Parses the text content of the given node as the data type of this component
+	 * adapter;
 	 */
 	public T parse(Node node) {
 
@@ -56,12 +57,13 @@ public class XmlTextAdapter<T> implements XmlAdapter<T> {
 			Text text = document.createTextNode(txt);
 			parent.appendChild(text);
 			return text;
-		} else
+		} else {
 			return null;
+		}
 	}
 
 	/**
-	 * Gets the data type of this xml adapter.
+	 * Gets the data type of this XML adapter.
 	 */
 	public Class<T> getDataType() {
 		return this.componentAdapter.dataType;

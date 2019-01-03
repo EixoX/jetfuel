@@ -1,6 +1,7 @@
 package com.eixox.data;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * A generic row update;
@@ -13,7 +14,7 @@ public abstract class DataUpdate extends DataFilter<DataUpdate> {
 	/**
 	 * The values that should be updated when this command runs;
 	 */
-	public final LinkedHashMap<Column, Object> values = new LinkedHashMap<Column, Object>();
+	public final Map<Column, Object> values = new LinkedHashMap<>();
 
 	/**
 	 * Gets a reference to this for chaining commands;

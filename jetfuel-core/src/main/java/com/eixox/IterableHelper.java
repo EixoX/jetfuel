@@ -6,51 +6,59 @@ import java.util.List;
 
 public class IterableHelper {
 
-	public static synchronized final boolean arrayContains(Object haystack, Object needle) {
+	private IterableHelper() {
+	}
+
+	public static final synchronized boolean arrayContains(Object haystack, Object needle) {
 		int s = Array.getLength(haystack);
 		for (int i = 0; i < s; i++) {
 			Object o = Array.get(haystack, i);
 			if (o == null) {
 				if (needle == null)
 					return true;
-			} else if (o.equals(needle))
+			} else if (o.equals(needle)) {
 				return true;
+			}
 		}
 		return false;
 	}
 
-	public static synchronized final boolean listContains(List<?> haystack, Object needle) {
+	public static final synchronized boolean listContains(List<?> haystack, Object needle) {
 		int s = haystack.size();
 		for (int i = 0; i < s; i++) {
 			Object o = haystack.get(i);
 			if (o == null) {
 				if (needle == null)
 					return true;
-			} else if (o.equals(needle))
+			} else if (o.equals(needle)) {
 				return true;
+			}
 		}
 		return false;
 	}
 
-	public static synchronized final boolean iterableContains(Iterable<?> haystack, Object needle) {
+	public static final synchronized boolean iterableContains(Iterable<?> haystack, Object needle) {
 		for (Object o : haystack) {
 			if (o == null) {
 				if (needle == null)
 					return true;
-			} else if (o.equals(needle))
+			} else if (o.equals(needle)) {
 				return true;
+			}
+
 		}
 		return false;
 	}
 
-	public static synchronized final boolean iteratorContains(Iterator<?> haystack, Object needle) {
+	public static final synchronized boolean iteratorContains(Iterator<?> haystack, Object needle) {
 		Object o = null;
 		for (; haystack.hasNext(); o = haystack.next()) {
 			if (o == null) {
 				if (needle == null)
 					return true;
-			} else if (o.equals(needle))
+			} else if (o.equals(needle)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -78,7 +86,7 @@ public class IterableHelper {
 		if (Iterator.class.isAssignableFrom(haystackClass))
 			return iteratorContains((Iterator<?>) haystack, needle);
 
-		throw new RuntimeException("Can't lookup values on this type of collection: " + haystackClass);
+		throw new JetfuelException("Can't lookup values on this type of collection: " + haystackClass);
 
 	}
 

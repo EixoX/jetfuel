@@ -3,6 +3,8 @@ package com.eixox.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eixox.JetfuelException;
+
 public class DataColumnSchema<T extends Column> extends ArrayList<T> implements ColumnSchema<T> {
 
 	/**
@@ -22,7 +24,7 @@ public class DataColumnSchema<T extends Column> extends ArrayList<T> implements 
 	public T get(String name) {
 		int index = indexOf(name);
 		if (index < 0)
-			throw new RuntimeException(name + " not found on " + getClass() + " -> " + schema_name);
+			throw new JetfuelException(name + " not found on " + getClass() + " -> " + schema_name);
 		else
 			return super.get(index);
 	}
@@ -42,7 +44,7 @@ public class DataColumnSchema<T extends Column> extends ArrayList<T> implements 
 	}
 
 	public List<T> getUniqueColumns() {
-		ArrayList<T> list = new ArrayList<T>();
+		ArrayList<T> list = new ArrayList<>();
 		for (T c : this)
 			if (c.isUnique())
 				list.add(c);
@@ -50,7 +52,7 @@ public class DataColumnSchema<T extends Column> extends ArrayList<T> implements 
 	}
 
 	public List<T> getCompositeKeys() {
-		ArrayList<T> list = new ArrayList<T>();
+		ArrayList<T> list = new ArrayList<>();
 		for (T c : this)
 			if (c.isCompositeKey())
 				list.add(c);

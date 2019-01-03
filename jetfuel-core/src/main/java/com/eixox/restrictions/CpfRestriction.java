@@ -20,10 +20,11 @@ public class CpfRestriction implements Restriction {
 				else {
 					return isValid(Long.parseLong(is));
 				}
-			} else if (value instanceof Number)
+			} else if (value instanceof Number) {
 				return isValid(((Number) value).longValue());
-			else
+			} else {
 				return false;
+			}
 		} catch (Exception e) {
 			return false;
 		}
@@ -33,9 +34,15 @@ public class CpfRestriction implements Restriction {
 		if (value < 1)
 			return false;
 
-		if (value == 11111111111L || value == 22222222222L || value == 33333333333L || value == 44444444444L || value == 55555555555L
-				|| value == 66666666666L
-				|| value == 77777777777L || value == 88888888888L || value == 99999999999L)
+		if (value == 11111111111L ||
+				value == 22222222222L ||
+				value == 33333333333L ||
+				value == 44444444444L ||
+				value == 55555555555L ||
+				value == 66666666666L ||
+				value == 77777777777L ||
+				value == 88888888888L ||
+				value == 99999999999L)
 			return false;
 
 		long a = ((value / 10000000000L) % 10);
@@ -53,19 +60,18 @@ public class CpfRestriction implements Restriction {
 		if (d1 == 10)
 			d1 = 0;
 
-		// d1 = (d1 >= 10 ? 0 : 11 - d1);
-
 		// Note: compute 2nd verification digit.
 		long d2 = (b * 1 + c * 2 + d * 3 + e * 4 + f * 5 + g * 6 + h * 7 + i * 8 + d1 * 9) % 11;
 		if (d2 == 10)
 			d2 = 0;
-		// d2 = (d2 >= 10 ? 0 : 11 - d2);
 
 		return (d1 == ((value / 10) % 10) && d2 == (value % 10));
 	}
 
 	public RestrictionResult validate(Object input) {
-		return isValidObject(input) ? new RestrictionResult(true, "") : new RestrictionResult(false, "Não é um CPF válido.");
+		return isValidObject(input)
+				? new RestrictionResult(true, "")
+				: new RestrictionResult(false, "Não é um CPF válido.");
 	}
 
 }

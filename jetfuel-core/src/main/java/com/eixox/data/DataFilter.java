@@ -14,7 +14,8 @@ public abstract class DataFilter<T extends DataFilter<T>> implements Filterable<
 	 * 
 	 * @return
 	 */
-	public abstract ColumnSchema<?> getSchema();
+	@SuppressWarnings("rawtypes")
+	public abstract ColumnSchema getSchema();
 
 	/**
 	 * The filter expression object of this instance.

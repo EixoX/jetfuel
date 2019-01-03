@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import com.eixox.reflection.Aspect;
 
-
 /**
  * This is a special aspect that looks for members that have restrictions.
  * 
@@ -35,7 +34,7 @@ public class RestrictionAspect<T> extends Aspect<T, RestrictionAspectField> {
 	/**
 	 * Holds a static map of aspect for fast cached response;
 	 */
-	private static final HashMap<Class<?>, RestrictionAspect<?>> INSTANCES = new HashMap<Class<?>, RestrictionAspect<?>>();
+	private static final HashMap<Class<?>, RestrictionAspect<?>> INSTANCES = new HashMap<>();
 
 	/**
 	 * Gets or creates an instance of a Restriction Aspect for a specific class;
@@ -44,12 +43,8 @@ public class RestrictionAspect<T> extends Aspect<T, RestrictionAspectField> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized final <T> RestrictionAspect<T> getInstance(Class<T> claz) {
-		RestrictionAspect<T> aspect = (RestrictionAspect<T>) INSTANCES.get(claz);
-		if (aspect == null) {
-			aspect = new RestrictionAspect<T>(claz);
-			INSTANCES.put(claz, aspect);
-		}
-		return aspect;
+	public static final synchronized <T> RestrictionAspect<T> getInstance(Class<T> claz) {
+
+		return (RestrictionAspect<T>) INSTANCES.computeIfAbsent(claz, RestrictionAspect::new);
 	}
 }

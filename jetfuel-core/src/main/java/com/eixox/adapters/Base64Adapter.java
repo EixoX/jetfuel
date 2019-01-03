@@ -1,6 +1,6 @@
 package com.eixox.adapters;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A byte array Base64 adapter;
@@ -20,9 +20,9 @@ public class Base64Adapter extends ByteArrayAdapter {
 		else if (source.length == 0)
 			return "";
 		else {
-			byte data[] = new byte[source.length + 2];
+			byte[] data = new byte[source.length + 2];
 			System.arraycopy(source, 0, data, 0, source.length);
-			byte dest[] = new byte[(data.length / 3) * 4];
+			byte[] dest = new byte[(data.length / 3) * 4];
 
 			// 3-byte to 4-byte conversion
 			for (int sidx = 0, didx = 0; sidx < source.length; sidx += 3, didx += 4) {
@@ -34,7 +34,7 @@ public class Base64Adapter extends ByteArrayAdapter {
 				dest[didx + 3] = (byte) (data[sidx + 2] & 077);
 			}
 
-			// 0-63 to ascii printable conversion
+			// 0-63 to ASCII printable conversion
 			for (int idx = 0; idx < dest.length; idx++) {
 				if (dest[idx] < 26)
 					dest[idx] = (byte) (dest[idx] + 'A');
@@ -62,15 +62,15 @@ public class Base64Adapter extends ByteArrayAdapter {
 	@Override
 	public byte[] parse(String source) {
 		if (source == null || source.isEmpty()) {
-			return null;
+			return new byte[0];
 		} else {
-			byte[] data = source.getBytes(Charset.forName("ASCII"));
+			byte[] data = source.getBytes(StandardCharsets.US_ASCII);
 			int tail = data.length;
 			while (data[tail - 1] == '=')
 				tail--;
-			byte dest[] = new byte[tail - data.length / 4];
+			byte[] dest = new byte[tail - data.length / 4];
 
-			// ascii printable to 0-63 conversion
+			// ASCII printable to 0-63 conversion
 			for (int idx = 0; idx < data.length; idx++) {
 				if (data[idx] == '=')
 					data[idx] = 0;
@@ -87,7 +87,8 @@ public class Base64Adapter extends ByteArrayAdapter {
 			}
 
 			// 4-byte to 3-byte conversion
-			int sidx, didx;
+			int sidx;
+			int didx;
 			for (sidx = 0, didx = 0; didx < dest.length - 2; sidx += 4, didx += 3) {
 				dest[didx] = (byte) (((data[sidx] << 2) & 255) |
 						((data[sidx + 1] >>> 4) & 3));
@@ -107,6 +108,5 @@ public class Base64Adapter extends ByteArrayAdapter {
 			return dest;
 		}
 	}
-
 
 }

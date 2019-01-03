@@ -76,7 +76,7 @@ public class ArrayAdapter<T> extends Adapter<T[]> {
 
 		// null checks
 		if (source == null || source.isEmpty())
-			return null;
+			return newArray(0);
 
 		// splits and parses
 		String[] items = source.split(regex);
@@ -114,15 +114,15 @@ public class ArrayAdapter<T> extends Adapter<T[]> {
 	@SuppressWarnings("unchecked")
 	public T[] convertArray(Object source) {
 		Class<?> sourceClass = source.getClass();
-		Class<?> componentType = sourceClass.getComponentType();
+		Class<?> sourceComponentType = sourceClass.getComponentType();
 
 		// is it an array of the same type?
-		if (componentAdapter.getDataType().isAssignableFrom(componentType))
+		if (componentAdapter.getDataType().isAssignableFrom(sourceComponentType))
 			return (T[]) source;
 
 		// Adapts and copies the values to the new array
 		int length = Array.getLength(source);
-		T[] arr = (T[]) Array.newInstance(componentType, length);
+		T[] arr = (T[]) Array.newInstance(sourceComponentType, length);
 		for (int i = 0; i < length; i++)
 			arr[i] = componentAdapter.convert(Array.get(source, i));
 		return arr;
@@ -166,7 +166,7 @@ public class ArrayAdapter<T> extends Adapter<T[]> {
 	 * @param list
 	 * @return
 	 */
-	public static synchronized final int[] toIntArray(List<Integer> list) {
+	public static final synchronized int[] toIntArray(List<Integer> list) {
 		int[] vals = new int[list.size()];
 		for (int i = 0; i < vals.length; i++)
 			vals[i] = list.get(i);
@@ -179,7 +179,7 @@ public class ArrayAdapter<T> extends Adapter<T[]> {
 	 * @param list
 	 * @return
 	 */
-	public static synchronized final long[] toLongArray(List<Long> list) {
+	public static final synchronized long[] toLongArray(List<Long> list) {
 		long[] vals = new long[list.size()];
 		for (int i = 0; i < vals.length; i++)
 			vals[i] = list.get(i);
@@ -192,7 +192,7 @@ public class ArrayAdapter<T> extends Adapter<T[]> {
 	 * @param list
 	 * @return
 	 */
-	public static synchronized final double[] toDoubleArray(List<Double> list) {
+	public static final synchronized double[] toDoubleArray(List<Double> list) {
 		double[] vals = new double[list.size()];
 		for (int i = 0; i < vals.length; i++)
 			vals[i] = list.get(i);
@@ -205,7 +205,7 @@ public class ArrayAdapter<T> extends Adapter<T[]> {
 	 * @param list
 	 * @return
 	 */
-	public static synchronized final byte[] toByteArray(List<Byte> list) {
+	public static final synchronized byte[] toByteArray(List<Byte> list) {
 		byte[] vals = new byte[list.size()];
 		for (int i = 0; i < vals.length; i++)
 			vals[i] = list.get(i);
@@ -218,7 +218,7 @@ public class ArrayAdapter<T> extends Adapter<T[]> {
 	 * @param list
 	 * @return
 	 */
-	public static synchronized final char[] toCharArray(List<Character> list) {
+	public static final synchronized char[] toCharArray(List<Character> list) {
 		char[] vals = new char[list.size()];
 		for (int i = 0; i < vals.length; i++)
 			vals[i] = list.get(i);
@@ -231,7 +231,7 @@ public class ArrayAdapter<T> extends Adapter<T[]> {
 	 * @param list
 	 * @return
 	 */
-	public static synchronized final boolean[] toBooleanArray(List<Boolean> list) {
+	public static final synchronized boolean[] toBooleanArray(List<Boolean> list) {
 		boolean[] vals = new boolean[list.size()];
 		for (int i = 0; i < vals.length; i++)
 			vals[i] = list.get(i);
@@ -244,7 +244,7 @@ public class ArrayAdapter<T> extends Adapter<T[]> {
 	 * @param list
 	 * @return
 	 */
-	public static synchronized final short[] toShortArray(List<Short> list) {
+	public static final synchronized short[] toShortArray(List<Short> list) {
 		short[] vals = new short[list.size()];
 		for (int i = 0; i < vals.length; i++)
 			vals[i] = list.get(i);

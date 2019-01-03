@@ -1,6 +1,7 @@
 package com.eixox.data.schema;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseSchema extends SchemaComplex<DatabaseSchemaTable> {
 
@@ -8,6 +9,6 @@ public class DatabaseSchema extends SchemaComplex<DatabaseSchemaTable> {
 		super(name, "DATABASE");
 	}
 
-	public final ArrayList<DatabaseSchemaTable> views = new ArrayList<DatabaseSchemaTable>();
+	public final List<DatabaseSchemaTable> views = new ArrayList<>();
 
 }

@@ -11,6 +11,8 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.nio.ByteBuffer;
 
+import com.eixox.JetfuelException;
+
 /**
  * Adapts source objects into InputStream;
  * 
@@ -45,7 +47,7 @@ public class InputStreamAdapter extends Adapter<InputStream> {
 			source.close();
 			return writer.toString();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 
 	}
@@ -63,13 +65,13 @@ public class InputStreamAdapter extends Adapter<InputStream> {
 			try {
 				return new FileInputStream((File) source);
 			} catch (FileNotFoundException e) {
-				throw new RuntimeException(e);
+				throw new JetfuelException(e);
 			}
 		else if (URL.class.isAssignableFrom(sourceClass))
 			try {
 				return ((URL) source).openStream();
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				throw new JetfuelException(e);
 			}
 		else
 			return super.changeType(sourceClass, source);
@@ -83,17 +85,12 @@ public class InputStreamAdapter extends Adapter<InputStream> {
 	 * @throws IOException
 	 */
 	public byte[] readBytes(InputStream is) throws IOException {
-
 		byte[] buffer = new byte[4086];
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream(4086)) {
-			for (int i = is.read(buffer); i >= 0; i = is.read(buffer)) {
-				bos.write(buffer, 0, i);
-			}
-			byte[] out = bos.toByteArray();
-			bos.close();
-			return out;
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(4086);
+		for (int i = is.read(buffer); i >= 0; i = is.read(buffer)) {
+			bos.write(buffer, 0, i);
 		}
-
+		return bos.toByteArray();
 	}
 
 }

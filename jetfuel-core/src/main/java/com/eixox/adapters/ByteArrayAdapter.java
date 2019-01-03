@@ -1,9 +1,10 @@
 package com.eixox.adapters;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+
+import com.eixox.JetfuelException;
 
 /**
  * The standard byte array adapter that reads and writes strings in the HEX
@@ -14,13 +15,13 @@ import java.nio.ByteBuffer;
  */
 public class ByteArrayAdapter extends Adapter<byte[]> {
 
-	final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	private static final char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-	final private static byte valueOf(char c) {
+	private static final byte valueOf(char c) {
 		for (byte i = 0; i < hexArray.length; i++)
 			if (c == hexArray[i])
 				return i;
-		throw new RuntimeException(c + " is not a hex character.");
+		throw new JetfuelException(c + " is not a hex character.");
 	}
 
 	/**
@@ -53,7 +54,7 @@ public class ByteArrayAdapter extends Adapter<byte[]> {
 	@Override
 	public byte[] parse(String source) {
 		if (source == null || source.isEmpty())
-			return null;
+			return new byte[0];
 
 		byte[] output = new byte[source.length() / 2];
 		for (int i = 0; i < output.length; i++) {
@@ -77,19 +78,13 @@ public class ByteArrayAdapter extends Adapter<byte[]> {
 				baos.write(i);
 			return baos.toByteArray();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			throw new JetfuelException(e);
 		}
 	}
 
 	/**
-	 * Changes the type of the source parameters to the data type outputted by
-	 * this adapter;
+	 * Changes the type of the source parameters to the data type outputted by this
+	 * adapter;
 	 */
 	@Override
 	protected byte[] changeType(Class<?> sourceClass, Object source) {

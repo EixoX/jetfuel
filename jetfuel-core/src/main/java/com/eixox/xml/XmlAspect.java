@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -61,7 +62,7 @@ public class XmlAspect<T> extends Aspect<T, XmlAspectMember> implements XmlAdapt
 	/**
 	 * Holds all static instances of the xml aspects;
 	 */
-	private static final HashMap<Class<?>, XmlAspect<?>> INSTANCES = new HashMap<Class<?>, XmlAspect<?>>();
+	private static final Map<Class<?>, XmlAspect<?>> INSTANCES = new HashMap<>();
 
 	/**
 	 * Gets a default static instance of an xml aspect. Will create one if none
@@ -71,14 +72,14 @@ public class XmlAspect<T> extends Aspect<T, XmlAspectMember> implements XmlAdapt
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized final <T> XmlAspect<T> getInstance(Class<T> claz) {
-		XmlAspect<T> aspect = (XmlAspect<T>) INSTANCES.get(claz);
-		if (aspect == null) {
-			aspect = new XmlAspect<T>(claz);
-			INSTANCES.put(claz, aspect);
+	public static final synchronized <T> XmlAspect<T> getInstance(Class<T> claz) {
+
+		return (XmlAspect<T>) INSTANCES.computeIfAbsent(claz, k -> {
+			XmlAspect<T> aspect = new XmlAspect<>(claz);
 			aspect.decorateChildren();
-		}
-		return aspect;
+			return aspect;
+		});
+
 	}
 
 	/**
@@ -88,7 +89,7 @@ public class XmlAspect<T> extends Aspect<T, XmlAspectMember> implements XmlAdapt
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized final <T> XmlAspect<T> getInstance(Type parameterizedType) {
+	public static final synchronized <T> XmlAspect<T> getInstance(Type parameterizedType) {
 		ParameterizedType pt = (ParameterizedType) parameterizedType;
 		Type[] ata = pt.getActualTypeArguments();
 		Class<T> claz = (Class<T>) ata[0];

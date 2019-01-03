@@ -28,6 +28,9 @@ import com.eixox.data.DataUpdate;
  */
 public class DatabaseStorage<T> extends DataStorage<T> {
 
+	private static final String SELECT = "SELECT ";
+	private static final String FROM = " FROM ";
+
 	/**
 	 * The SQL aspect associated with the Entity;
 	 */
@@ -107,10 +110,11 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 		command.appendRaw(")");
 
 		if (aspect.identity != null) {
-			Object identity_value = command.executeInsertAndScopeIdentity(aspect.identity);
-			aspect.identity.setValue(item, identity_value);
-		} else
+			Object identityValue = command.executeInsertAndScopeIdentity();
+			aspect.identity.setValue(item, identityValue);
+		} else {
 			command.executeNonQuery();
+		}
 
 	}
 
@@ -186,7 +190,7 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			@Override
 			public List<T> toList() {
 
-				ResultsetToArrayList<T> processor = new ResultsetToArrayList<T>(
+				ResultsetToArrayList<T> processor = new ResultsetToArrayList<>(
 						aspect,
 						database.supportsOffset()
 								? 0
@@ -194,10 +198,10 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 						limit);
 
 				return database.createCommand()
-						.appendRaw("SELECT ")
+						.appendRaw(SELECT)
 						.appendTop(offset + limit)
 						.appendNames(aspect)
-						.appendRaw(" FROM ")
+						.appendRaw(FROM)
 						.appendName(aspect.schemaName)
 						.appendWhere(filter)
 						.appendOrderBy(sort)
@@ -221,15 +225,15 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			@Override
 			public T first() {
 
-				ResultsetToEntity<T> processor = new ResultsetToEntity<T>(aspect, database.supportsOffset()
+				ResultsetToEntity<T> processor = new ResultsetToEntity<>(aspect, database.supportsOffset()
 						? 0
 						: offset);
 
 				return database.createCommand()
-						.appendRaw("SELECT ")
+						.appendRaw(SELECT)
 						.appendTop(1)
 						.appendNames(aspect)
-						.appendRaw(" FROM ")
+						.appendRaw(FROM)
 						.appendName(aspect.schemaName)
 						.appendWhere(filter)
 						.appendOrderBy(sort)
@@ -244,10 +248,10 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			@Override
 			public Map<String, Object> toMap() {
 				return database.createCommand()
-						.appendRaw("SELECT ")
+						.appendRaw(SELECT)
 						.appendTop(1)
 						.appendNames(aspect)
-						.appendRaw(" FROM ")
+						.appendRaw(FROM)
 						.appendName(aspect.schemaName)
 						.appendWhere(filter)
 						.appendOrderBy(sort)
@@ -260,7 +264,7 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 								if (!rs.next())
 									return null;
 
-								LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+								LinkedHashMap<String, Object> map = new LinkedHashMap<>();
 								for (DataAspectField field : aspect) {
 									String name = field.name;
 									String colName = field.columnName;
@@ -292,9 +296,10 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			@Override
 			public boolean exists() {
 				return Convert.toInt(database.createCommand()
-						.appendRaw("SELECT ")
+						.appendRaw(SELECT)
 						.appendTop(1)
-						.appendRaw("1 as one FROM ")
+						.appendRaw("1 as one")
+						.appendRaw(FROM)
 						.appendName(aspect.schemaName)
 						.appendWhere(filter)
 						.appendLimit(1)
@@ -307,10 +312,10 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			@Override
 			public Object firstMember(Column column) {
 				return database.createCommand()
-						.appendRaw("SELECT ")
+						.appendRaw(SELECT)
 						.appendTop(offset + 1)
 						.appendName(column.getColumnName())
-						.appendRaw(" FROM ")
+						.appendRaw(FROM)
 						.appendName(aspect.schemaName)
 						.appendWhere(filter)
 						.appendOrderBy(sort)
@@ -325,10 +330,10 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			@Override
 			public List<Object> getMembers(Column column) {
 				return database.createCommand()
-						.appendRaw("SELECT ")
+						.appendRaw(SELECT)
 						.appendTop(offset + limit)
 						.appendName(column.getColumnName())
-						.appendRaw(" FROM ")
+						.appendRaw(FROM)
 						.appendName(aspect.schemaName)
 						.appendWhere(filter)
 						.appendOrderBy(sort)
@@ -345,7 +350,7 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 										? limit
 										: Integer.MAX_VALUE;
 
-								ArrayList<Object> list = new ArrayList<Object>();
+								ArrayList<Object> list = new ArrayList<>();
 								for (int i = 0; i < l && rs.next(); i++)
 									list.add(rs.getObject(1));
 								return list;
@@ -364,10 +369,10 @@ public class DatabaseStorage<T> extends DataStorage<T> {
 			@Override
 			public void accept(Visitor<T> visitor) {
 				database.createCommand()
-						.appendRaw("SELECT ")
+						.appendRaw(SELECT)
 						.appendTop(offset + limit)
 						.appendNames(aspect)
-						.appendRaw(" FROM ")
+						.appendRaw(FROM)
 						.appendName(aspect.schemaName)
 						.appendWhere(filter)
 						.appendOrderBy(sort)

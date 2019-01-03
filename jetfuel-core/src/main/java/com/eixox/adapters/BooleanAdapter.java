@@ -22,9 +22,9 @@ public class BooleanAdapter extends Adapter<Boolean> {
 	 */
 	@Override
 	public Boolean parse(String source) {
-		return source == null || source.isEmpty() ?
-				whenNull() :
-				Boolean.parseBoolean(source);
+		return source == null || source.isEmpty()
+				? whenNull()
+				: Boolean.parseBoolean(source);
 	}
 
 	/**

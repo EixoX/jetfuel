@@ -32,6 +32,7 @@ public class ByteBufferAdapter extends Adapter<ByteBuffer> {
 	/**
 	 * Parses the input string into a byte buffer;
 	 */
+	@Override
 	public ByteBuffer parse(String source) {
 		byte[] bytes = byteArrayAdapter.parse(source);
 		return bytes == null
@@ -40,8 +41,9 @@ public class ByteBufferAdapter extends Adapter<ByteBuffer> {
 	}
 
 	/**
-	 * Formets the input byte buffer as a string;
+	 * Formats the input byte buffer as a string;
 	 */
+	@Override
 	public String format(ByteBuffer source) {
 		return source == null
 				? ""

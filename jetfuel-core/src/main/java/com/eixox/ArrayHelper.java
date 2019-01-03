@@ -2,6 +2,7 @@ package com.eixox;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A generic array helper than builds, copies and splices arrays.
@@ -11,10 +12,13 @@ import java.util.ArrayList;
  */
 public class ArrayHelper {
 
-	@SuppressWarnings("unchecked")
-	public static synchronized final <T> ArrayList<T[]> splice(T[] source, int... positions) {
+	private ArrayHelper() {
+	}
 
-		ArrayList<T[]> list = new ArrayList<T[]>(positions.length + 1);
+	@SuppressWarnings("unchecked")
+	public static final synchronized <T> List<T[]> splice(T[] source, int... positions) {
+
+		ArrayList<T[]> list = new ArrayList<>(positions.length + 1);
 		Class<?> claz = source[0].getClass();
 
 		int prevPos = 0;
@@ -36,5 +40,4 @@ public class ArrayHelper {
 		return list;
 	}
 
-	
 }

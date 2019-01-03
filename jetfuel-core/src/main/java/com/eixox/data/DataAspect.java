@@ -16,8 +16,8 @@ import com.eixox.reflection.Aspect;
 public abstract class DataAspect<T, G extends DataAspectField> extends Aspect<T, G> implements ColumnSchema<G> {
 
 	public final G identity;
-	public final ArrayList<G> uniques = new ArrayList<G>();
-	public final ArrayList<G> compositeKeys = new ArrayList<G>();
+	public final List<G> uniques = new ArrayList<>();
+	public final List<G> compositeKeys = new ArrayList<>();
 	public final String schemaName;
 
 	/**
@@ -55,7 +55,7 @@ public abstract class DataAspect<T, G extends DataAspectField> extends Aspect<T,
 	/**
 	 * Gets the schema (table) name of this aspect.
 	 */
-	public synchronized final String getSchemaName() {
+	public final synchronized String getSchemaName() {
 		return this.schemaName;
 	}
 
@@ -65,7 +65,7 @@ public abstract class DataAspect<T, G extends DataAspectField> extends Aspect<T,
 	 * @param columnName
 	 * @return
 	 */
-	public synchronized final int indexOfColumnName(String columnName) {
+	public final synchronized int indexOfColumnName(String columnName) {
 		int s = this.size();
 		for (int i = 0; i < s; i++)
 			if (columnName.equalsIgnoreCase(get(i).columnName))
@@ -97,7 +97,7 @@ public abstract class DataAspect<T, G extends DataAspectField> extends Aspect<T,
 	/**
 	 * Creates a composite key filter based on the given row values;
 	 */
-	public synchronized final FilterExpression getCompositeKeyFilter(Object row) {
+	public final synchronized FilterExpression getCompositeKeyFilter(Object row) {
 		if (this.compositeKeys.isEmpty())
 			return null;
 

@@ -1,5 +1,7 @@
 package com.eixox.data;
 
+import com.eixox.JetfuelException;
+
 /**
  * Represents a filter node, part of a filter expression.
  * 
@@ -68,7 +70,7 @@ public class FilterNode implements Filter {
 			case OR:
 				return this.filter.testValue(input) || this.next.testValue(input);
 			default:
-				throw new RuntimeException("Unknown filter operation " + operation);
+				throw new JetfuelException("Unknown filter operation " + operation);
 			}
 	}
 
@@ -85,7 +87,7 @@ public class FilterNode implements Filter {
 			case OR:
 				return this.filter.testRow(row) || this.next.testRow(row);
 			default:
-				throw new RuntimeException("Unknown filter operation " + operation);
+				throw new JetfuelException("Unknown filter operation " + operation);
 			}
 	}
 
@@ -102,7 +104,7 @@ public class FilterNode implements Filter {
 			case OR:
 				return this.filter.testEntity(entity) || this.next.testEntity(entity);
 			default:
-				throw new RuntimeException("Unknown filter operation " + operation);
+				throw new JetfuelException("Unknown filter operation " + operation);
 			}
 	}
 

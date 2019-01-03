@@ -11,36 +11,37 @@ public class ListStorageIterator<T> implements Iterator<T> {
 	public final int offset;
 	public final int limit;
 
-	private int end_position;
-	private int current_position;
-	private T current_value;
+	private int endPosition;
+	private int currentPosition;
+	private T currentValue;
 
 	public ListStorageIterator(ListStorage<T> storage, Filter filter, int offset, int limit) {
 		this.storage = storage;
 		this.filter = filter;
 		this.offset = offset;
 		this.limit = limit;
-		this.end_position = limit > 0
+		this.endPosition = limit > 0
 				? offset + limit
 				: storage.list.size();
-		this.current_position = offset;
+		this.currentPosition = offset;
 	}
 
 	public boolean hasNext() {
 
-		if (current_position >= end_position || current_position >= storage.list.size())
+		if (currentPosition >= endPosition || currentPosition >= storage.list.size())
 			return false;
 
-		current_value = storage.list.get(current_position);
-		current_position++;
+		currentValue = storage.list.get(currentPosition);
+		currentPosition++;
 
-		return (filter != null && filter.testEntity(current_value) == false)
-				? hasNext()
-				: true;
+		if (filter == null || filter.testEntity(currentValue))
+			return true;
+		else
+			return hasNext();
 	}
 
 	public T next() {
-		return this.current_value;
+		return this.currentValue;
 	}
 
 }

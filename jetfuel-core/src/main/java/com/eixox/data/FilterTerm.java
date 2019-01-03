@@ -3,6 +3,8 @@ package com.eixox.data;
 import java.lang.reflect.Array;
 import java.util.regex.Pattern;
 
+import com.eixox.JetfuelException;
+
 /**
  * Represents a filter term.
  * 
@@ -57,8 +59,8 @@ public class FilterTerm implements Filter {
 	}
 
 	/**
-	 * Validates that the value either an enumerable or array and that the input
-	 * is contained inside it.
+	 * Validates that the value either an enumerable or array and that the input is
+	 * contained inside it.
 	 * 
 	 * @param input
 	 * @return
@@ -80,9 +82,7 @@ public class FilterTerm implements Filter {
 					return true;
 			}
 			return false;
-		}
-		// tests an interable;
-		else if (Iterable.class.isAssignableFrom(inClass)) {
+		} else if (Iterable.class.isAssignableFrom(inClass)) {
 			for (Object o : (Iterable) value)
 				if (o != null && o.equals(input))
 					return true;
@@ -90,7 +90,7 @@ public class FilterTerm implements Filter {
 		}
 		// throws an exception cause we can't test anything else
 		else {
-			throw new RuntimeException("We can only use IN comparison in Arrays or Iterables: " + inClass);
+			throw new JetfuelException("We can only use IN comparison in Arrays or Iterables: " + inClass);
 		}
 
 	}
@@ -109,27 +109,17 @@ public class FilterTerm implements Filter {
 					? input == null
 					: value.equals(input);
 		case GREATER_OR_EQUAL:
-			return input == null
-					? false
-					: ((Comparable) input).compareTo(value) >= 0;
+			return input != null && ((Comparable) input).compareTo(value) >= 0;
 		case GREATER_THAN:
-			return input == null
-					? false
-					: ((Comparable) input).compareTo(value) > 0;
+			return input != null && ((Comparable) input).compareTo(value) > 0;
 		case IN:
 			return testIn(input);
 		case LIKE:
-			return value == null || input == null
-					? false
-					: Pattern.matches((String) value, (CharSequence) input);
+			return value != null && input != null && Pattern.matches((String) value, (CharSequence) input);
 		case LOWER_OR_EQUAL:
-			return input == null
-					? false
-					: ((Comparable) input).compareTo(value) <= 0;
+			return input != null && ((Comparable) input).compareTo(value) <= 0;
 		case LOWER_THAN:
-			return input == null
-					? false
-					: ((Comparable) input).compareTo(value) < 0;
+			return input != null && ((Comparable) input).compareTo(value) < 0;
 		case NOT_EQUAL_TO:
 			return value == null
 					? input != null
@@ -137,11 +127,9 @@ public class FilterTerm implements Filter {
 		case NOT_IN:
 			return !testIn(input);
 		case NOT_LIKE:
-			return value == null || input == null
-					? true
-					: !Pattern.matches((String) value, (CharSequence) input);
+			return value == null || input == null || !Pattern.matches((String) value, (CharSequence) input);
 		default:
-			throw new RuntimeException("Unknown filter comparison " + comparison);
+			throw new JetfuelException("Unknown filter comparison " + comparison);
 		}
 	}
 
@@ -167,8 +155,8 @@ public class FilterTerm implements Filter {
 	 */
 	public final boolean testEntity(Object entity) {
 		DataAspectField field = (DataAspectField) this.column;
-		Object value = field.getValue(entity);
-		return testValue(value);
+		Object testValue = field.getValue(entity);
+		return testValue(testValue);
 	}
 
 }

@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 
+import com.eixox.JetfuelException;
 import com.eixox.adapters.Adapter;
 
 /**
@@ -41,23 +42,6 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	}
 
 	/**
-	 * Gets only the declared annotations of the aspect member;
-	 * 
-	 * @return
-	 */
-	@Override
-	public abstract Annotation[] getDeclaredAnnotations();
-
-	/**
-	 * When overriden will inspect the reflected annotated member for a specific
-	 * type of annotation.
-	 * 
-	 * @param claz
-	 * @return
-	 */
-	public abstract <T extends Annotation> T getAnnotation(Class<T> claz);
-
-	/**
 	 * When overriden will inspect the reflected annotated member for a specific
 	 * type of annotation.
 	 * 
@@ -67,27 +51,13 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	public abstract <T extends Annotation> boolean hasAnnotation(Class<T> claz);
 
 	/**
-	 * Gets the annotations of the member;
-	 * 
-	 * @return
-	 */
-	public abstract Annotation[] getAnnotations();
-
-	/**
 	 * When overriden will actually get the value of a specific member of an object.
 	 * 
 	 * @param instance
 	 * @return
 	 * @throws Exception
 	 */
-	protected abstract Object getMemberValue(Object instance) throws Exception;
-
-	/**
-	 * Gets the declaring class of this aspect member;
-	 * 
-	 * @return
-	 */
-	public abstract Class<?> getDeclaringClass();
+	protected abstract Object getMemberValue(Object instance);
 
 	/**
 	 * Gets the data type of the member of the aspect.
@@ -103,7 +73,7 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	 * @param value
 	 * @throws Exception
 	 */
-	protected abstract void setMemberValue(Object instance, Object value) throws Exception;
+	protected abstract void setMemberValue(Object instance, Object value);
 
 	/**
 	 * Sets the value of a member of an object;
@@ -112,12 +82,11 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	 * @param value
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized final void setValue(Object instance, Object value) {
+	public final synchronized void setValue(Object instance, Object value) {
 		try {
 			if (this.adapter != null)
 				setMemberValue(instance, this.adapter.convert(value));
-			else if (value != null &&
-					value instanceof Map &&
+			else if (value instanceof Map &&
 					!Map.class.isAssignableFrom(getDataType())) {
 				Class<?> childClass = getDataType();
 				Object child = childClass.getConstructor().newInstance();
@@ -127,10 +96,11 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 					field.set(child, fieldvalue);
 				}
 				setMemberValue(instance, child);
-			} else
+			} else {
 				setMemberValue(instance, value);
+			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -140,12 +110,8 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	 * @param instance
 	 * @return
 	 */
-	public synchronized final Object getValue(Object instance) {
-		try {
-			return getMemberValue(instance);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public final synchronized Object getValue(Object instance) {
+		return getMemberValue(instance);
 	}
 
 	/**
@@ -154,18 +120,17 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	 * @param instance
 	 * @return
 	 */
-	public synchronized final String getFormattedValue(Object instance) {
+	public final synchronized String getFormattedValue(Object instance) {
 		try {
 			Object val = getMemberValue(instance);
-			String txt = this.adapter.formatObject(val);
-			return txt;
+			return this.adapter.formatObject(val);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
 	/**
-	 * Gets the name of the declaring class folowed by the name of this member;
+	 * Gets the name of the declaring class followed by the name of this member;
 	 */
 	@Override
 	public String toString() {
@@ -191,14 +156,6 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	}
 
 	/**
-	 * Gets the modifiers;
-	 * 
-	 * @return
-	 */
-	@Override
-	public abstract int getModifiers();
-
-	/**
 	 * Gets the name of the member;
 	 * 
 	 * @return
@@ -207,14 +164,6 @@ public abstract class AspectMember implements AnnotatedElement, Member {
 	public String getName() {
 		return this.name;
 	}
-
-	/**
-	 * Tells whether the aspect member is synthetic or not;
-	 * 
-	 * @return
-	 */
-	@Override
-	public abstract boolean isSynthetic();
 
 	/**
 	 * Tells whether the aspect member is abstract or not;

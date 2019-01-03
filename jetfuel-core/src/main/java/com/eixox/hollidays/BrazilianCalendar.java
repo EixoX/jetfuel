@@ -30,13 +30,16 @@ import com.eixox.hollidays.br.TiradentesDay;
  */
 public class BrazilianCalendar {
 
+	private BrazilianCalendar() {
+	}
+
 	/**
 	 * Holds a static list of brazilian hollidays;
 	 */
-	public static final List<Holliday> HOLLIDAYS;
+	protected static final List<Holliday> HOLLIDAYS;
 
 	static {
-		HOLLIDAYS = new LinkedList<Holliday>();
+		HOLLIDAYS = new LinkedList<>();
 		HOLLIDAYS.add(new AllSoulsDay());
 		HOLLIDAYS.add(new BlackConsciousnessDay());
 		HOLLIDAYS.add(new CarnivalMonday());
@@ -61,10 +64,10 @@ public class BrazilianCalendar {
 	 * @return
 	 */
 	public static boolean isBusinessDay(final Calendar calendar) {
-		int day_of_week = calendar.get(Calendar.DAY_OF_WEEK);
-		if (day_of_week == Calendar.SUNDAY)
+		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+		if (dayOfWeek == Calendar.SUNDAY)
 			return false;
-		if (day_of_week == Calendar.SATURDAY)
+		if (dayOfWeek == Calendar.SATURDAY)
 			return false;
 		for (Holliday holliday : HOLLIDAYS) {
 			Calendar hol = holliday.getCalendar(calendar.get(Calendar.YEAR));

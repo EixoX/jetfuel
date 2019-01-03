@@ -3,6 +3,8 @@ package com.eixox.data;
 import java.util.Iterator;
 import java.util.List;
 
+import com.eixox.JetfuelException;
+
 /**
  * Represents a generic storage that can handle insert, select, delete and
  * update commands; Some useful methods for retrieving items are implemented;
@@ -17,7 +19,8 @@ public abstract class DataStorage<T> {
 	 * 
 	 * @return
 	 */
-	public abstract ColumnSchema<?> getSchema();
+	@SuppressWarnings("rawtypes")
+	public abstract ColumnSchema getSchema();
 
 	/**
 	 * Inserts one item;
@@ -42,7 +45,7 @@ public abstract class DataStorage<T> {
 	 * 
 	 * @param items
 	 */
-	public synchronized final void insert(Iterable<T> items) {
+	public final synchronized void insert(Iterable<T> items) {
 		insert(items.iterator());
 	}
 
@@ -52,8 +55,7 @@ public abstract class DataStorage<T> {
 	 * @param iterator
 	 */
 	public synchronized void insert(Iterator<T> iterator) {
-		
-		
+
 		while (iterator.hasNext())
 			insert(iterator.next());
 	}
@@ -74,7 +76,7 @@ public abstract class DataStorage<T> {
 	public synchronized T selectByIdentity(Object id) {
 		Column identity = getSchema().getIdentity();
 		if (identity == null)
-			throw new RuntimeException(
+			throw new JetfuelException(
 					"This schema has no identity column: " + getClass() + " -> " + getSchema().getSchemaName());
 		else
 			return select().where(identity, id).first();
@@ -133,20 +135,20 @@ public abstract class DataStorage<T> {
 		// deletes by identity
 		Column identity = schema.getIdentity();
 		if (identity != null) {
-			Object identity_value = identity.getValue(item);
-			if (!isEmptyIdentity(identity_value))
+			Object identityValue = identity.getValue(item);
+			if (!isEmptyIdentity(identityValue))
 				return delete()
-						.where(identity, identity_value)
+						.where(identity, identityValue)
 						.execute();
 
 		}
 
 		// deletes by unique key
 		for (Column unique : schema.getUniqueColumns()) {
-			Object unique_value = unique.getValue(item);
-			if (unique_value != null)
+			Object uniqueValue = unique.getValue(item);
+			if (uniqueValue != null)
 				return delete()
-						.where(unique, unique_value)
+						.where(unique, uniqueValue)
 						.execute();
 
 		}
@@ -158,8 +160,7 @@ public abstract class DataStorage<T> {
 					.where(compositeKeyFilter)
 					.execute();
 
-		// can't delete the item;
-		throw new RuntimeException("Unable to DELETE the item of type " + item.getClass() + " -> " + item);
+		throw new JetfuelException("Unable to DELETE the item of type " + item.getClass() + " -> " + item);
 
 	}
 
@@ -182,7 +183,7 @@ public abstract class DataStorage<T> {
 	 * @param items
 	 * @return
 	 */
-	public synchronized final long delete(Iterable<T> items) {
+	public final synchronized long delete(Iterable<T> items) {
 		return delete(items.iterator());
 	}
 
@@ -211,8 +212,8 @@ public abstract class DataStorage<T> {
 
 		for (Column member : schema)
 			if (member.getColumnIndex() != column.getColumnIndex() &&
-					member.isIdentity() == false &&
-					member.isReadOnly() == false)
+					!member.isIdentity() &&
+					!member.isReadOnly())
 				update.set(member, member.getValue(item));
 
 		return update.where(column, value).execute();
@@ -229,17 +230,17 @@ public abstract class DataStorage<T> {
 		// updates by an identity
 		Column identity = schema.getIdentity();
 		if (identity != null) {
-			Object identity_value = identity.getValue(item);
-			if (!isEmptyIdentity(identity_value)) {
-				return updateByColumn(item, identity, identity_value);
+			Object identityValue = identity.getValue(item);
+			if (!isEmptyIdentity(identityValue)) {
+				return updateByColumn(item, identity, identityValue);
 			}
 		}
 
 		// updates by unique keys
 		for (Column unique : schema.getUniqueColumns()) {
-			Object unique_value = unique.getValue(item);
-			if (unique_value != null)
-				return updateByColumn(item, unique, unique_value);
+			Object uniqueValue = unique.getValue(item);
+			if (uniqueValue != null)
+				return updateByColumn(item, unique, uniqueValue);
 		}
 
 		// updates by composite key
@@ -299,7 +300,7 @@ public abstract class DataStorage<T> {
 	 * 
 	 * @param item
 	 */
-	public synchronized final void save(T item) {
+	public final synchronized void save(T item) {
 		if (update(item) < 1L)
 			insert(item);
 	}
@@ -320,7 +321,7 @@ public abstract class DataStorage<T> {
 	 * 
 	 * @param items
 	 */
-	public synchronized final void save(Iterable<T> items) {
+	public final synchronized void save(Iterable<T> items) {
 		save(items.iterator());
 	}
 
@@ -355,21 +356,22 @@ public abstract class DataStorage<T> {
 		ColumnSchema<?> schema = getSchema();
 		Column identity = schema.getIdentity();
 		if (identity != null) {
-			Object identity_value = identity.getValue(entity);
-			if (identity_value != null &&
-					!Double.valueOf(0.0).equals(identity_value) &&
-					!Long.valueOf(0L).equals(identity_value) &&
-					!Integer.valueOf(0).equals(identity_value)) {
-				return select().where(identity, identity_value).exists();
+			Object identityValue = identity.getValue(entity);
+			if (identityValue != null &&
+					!Double.valueOf(0.0).equals(identityValue) &&
+					!Long.valueOf(0L).equals(identityValue) &&
+					!Integer.valueOf(0).equals(identityValue)) {
+				return select().where(identity, identityValue).exists();
 			}
 		}
 		for (Column uq : schema.getUniqueColumns()) {
-			Object uq_value = uq.getValue(entity);
-			if (uq_value != null)
-				return select().where(uq, uq_value).exists();
+			Object uqValue = uq.getValue(entity);
+			if (uqValue != null)
+				return select().where(uq, uqValue).exists();
 		}
-		return schema.getCompositeKeys().isEmpty()
-				? false
-				: select().where(schema.getCompositeKeyFilter(entity)).exists();
+		if (schema.getCompositeKeys().isEmpty())
+			return false;
+		else
+			return select().where(schema.getCompositeKeyFilter(entity)).exists();
 	}
 }

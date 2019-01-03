@@ -42,7 +42,7 @@ public class XmlArrayAdapter<T> implements XmlAdapter<T[]> {
 	 */
 	@SuppressWarnings("unchecked")
 	public T[] parse(Node node) {
-		ArrayList<Node> children = new ArrayList<Node>();
+		ArrayList<Node> children = new ArrayList<>();
 		for (Node child = node.getFirstChild(); child != null; child = child.getNextSibling())
 			if (child.getNodeType() == Node.ELEMENT_NODE && xmlName.equalsIgnoreCase(child.getNodeName()))
 				children.add(child);

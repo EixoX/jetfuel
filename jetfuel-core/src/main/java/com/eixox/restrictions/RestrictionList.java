@@ -20,7 +20,7 @@ public class RestrictionList extends ArrayList<Restriction> implements Restricti
 	 */
 	private static final long serialVersionUID = 6621546671326200260L;
 
-	public synchronized final RestrictionResult validate(Object input) {
+	public final synchronized RestrictionResult validate(Object input) {
 		if (this.size() == 0)
 			return new RestrictionResult(true, null);
 		else {
@@ -42,7 +42,7 @@ public class RestrictionList extends ArrayList<Restriction> implements Restricti
 		return null;
 	}
 
-	public static synchronized final RestrictionList findRestrictions(AnnotatedElement element) {
+	public static final synchronized RestrictionList findRestrictions(AnnotatedElement element) {
 		Annotation[] annotations = element.getAnnotations();
 		RestrictionList list = new RestrictionList();
 		for (int i = 0; i < annotations.length; i++) {
