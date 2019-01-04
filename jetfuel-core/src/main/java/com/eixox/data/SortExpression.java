@@ -43,7 +43,8 @@ public class SortExpression {
 		return thenBy(SortDirection.ASC, names);
 	}
 
-	public final ColumnSchema<?> getSchema() {
+	@SuppressWarnings("rawtypes")
+	public final ColumnSchema getSchema() {
 		return this.first.column.getSchema();
 	}
 

@@ -20,7 +20,8 @@ public interface Filter {
 	 * 
 	 * @return
 	 */
-	public ColumnSchema<?> getSchema();
+	@SuppressWarnings("rawtypes")
+	public ColumnSchema getSchema();
 
 	/**
 	 * Checks if the input passes this filter;

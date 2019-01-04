@@ -5,12 +5,14 @@ import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
-public class X509KeyManager implements javax.net.ssl.X509KeyManager {
+import javax.net.ssl.X509KeyManager;
+
+public class DullX509KeyManager implements X509KeyManager {
 
 	private X509Certificate certificate;
 	private PrivateKey privateKey;
 
-	public X509KeyManager(X509Certificate certificate, PrivateKey privateKey) {
+	public DullX509KeyManager(X509Certificate certificate, PrivateKey privateKey) {
 		this.certificate = certificate;
 		this.privateKey = privateKey;
 	}

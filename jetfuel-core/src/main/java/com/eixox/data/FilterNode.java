@@ -70,7 +70,7 @@ public class FilterNode implements Filter {
 			case OR:
 				return this.filter.testValue(input) || this.next.testValue(input);
 			default:
-				throw new JetfuelException("Unknown filter operation " + operation);
+				throw new JetfuelException(UNKOWN_FILTER_OPERATION + operation);
 			}
 	}
 
@@ -87,7 +87,7 @@ public class FilterNode implements Filter {
 			case OR:
 				return this.filter.testRow(row) || this.next.testRow(row);
 			default:
-				throw new JetfuelException("Unknown filter operation " + operation);
+				throw new JetfuelException(UNKOWN_FILTER_OPERATION + operation);
 			}
 	}
 
@@ -104,8 +104,9 @@ public class FilterNode implements Filter {
 			case OR:
 				return this.filter.testEntity(entity) || this.next.testEntity(entity);
 			default:
-				throw new JetfuelException("Unknown filter operation " + operation);
+				throw new JetfuelException(UNKOWN_FILTER_OPERATION + operation);
 			}
 	}
 
+	private static final String UNKOWN_FILTER_OPERATION = "Unknown filter operation ";
 }

@@ -160,12 +160,27 @@ public abstract class Database {
 		}
 	}
 
-	/**
-	 * Finalizes this database recycling any connections still on the pool;
-	 */
-	protected void finalize() throws Throwable {
-		recycleConnections();
-	}
+	@SuppressWarnings("unused")
+	private final Object finalizerGuardian = new Object() {
+
+		/**
+		 * Java >= 9
+		 * 
+		 * @deprecated The garbage collector invokes object finalizer methods after it
+		 *             determines that the object is unreachable but before it reclaims
+		 *             the object's storage. Execution of the finalizer provides an
+		 *             opportunity to release resources such as open streams, files, and
+		 *             network connections that might not otherwise be released
+		 *             automatically through the normal action of the garbage collector.
+		 */
+		@Override
+		@Deprecated(
+				since = "1.9",
+				forRemoval = true)
+		protected void finalize() throws Throwable {
+			Database.this.recycleConnections();
+		}
+	};
 
 	/**
 	 * Creates a new SQL command to run against this database instance;

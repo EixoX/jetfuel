@@ -84,7 +84,7 @@ public class X509CertificateWithKey {
 		SSLContext sc = SSLContext.getInstance("TLSv1.2");
 		sc.init(
 				new KeyManager[] {
-						new X509KeyManager(certificate, privateKey)
+						new DullX509KeyManager(certificate, privateKey)
 				},
 				new TrustManager[] {
 						new DullX509TrustManager()
