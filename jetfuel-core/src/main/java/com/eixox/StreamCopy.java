@@ -19,7 +19,7 @@ public class StreamCopy {
 			for (int r = input.read(buffer); r >= 0; r = input.read(buffer))
 				output.write(buffer, 0, r);
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			throw new JetfuelException(ex);
 		}
 	}
 

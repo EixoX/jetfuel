@@ -1,6 +1,7 @@
 package com.eixox.data.common;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import com.eixox.data.Filter;
 
@@ -10,8 +11,8 @@ public class TableRowIterator implements Iterator<TableRow> {
 	public final Filter filter;
 	public final int start_position;
 	public final int end_position;
-	private int current_position;
-	private TableRow current_row;
+	private int currentPosition;
+	private TableRow currentRow;
 
 	public TableRowIterator(Table source, Filter filter, int offset, int limit) {
 		this.source = source;
@@ -20,28 +21,31 @@ public class TableRowIterator implements Iterator<TableRow> {
 		this.end_position = limit > 0
 				? offset + limit
 				: source.rows.size();
-		this.current_position = offset;
+		this.currentPosition = offset;
 
 	}
 
 	public boolean hasNext() {
-		this.current_row = null;
-		if (current_position >= end_position || current_position >= source.rows.size())
+		this.currentRow = null;
+		if (currentPosition >= end_position || currentPosition >= source.rows.size())
 			return false;
 
-		TableRow r = source.rows.get(current_position);
-		current_position++;
+		TableRow r = source.rows.get(currentPosition);
+		currentPosition++;
 
 		if (filter != null && !filter.testRow(r.cells))
 			return hasNext();
 
-		current_row = r;
+		currentRow = r;
 		return true;
 
 	}
 
 	public TableRow next() {
-		return current_row;
+		if (currentRow == null)
+			throw new NoSuchElementException();
+		else
+			return currentRow;
 	}
 
 }

@@ -43,7 +43,7 @@ public class TableColumnSchema extends ArrayList<TableColumn> implements ColumnS
 
 	public TableColumn getIdentity() {
 		for (TableColumn col : this)
-			if (col.isIdentity)
+			if (col.isIdentity())
 				return col;
 		return null;
 	}
@@ -51,7 +51,7 @@ public class TableColumnSchema extends ArrayList<TableColumn> implements ColumnS
 	public List<TableColumn> getUniqueColumns() {
 		List<TableColumn> uniques = new LinkedList<>();
 		for (TableColumn col : this)
-			if (col.isUnique)
+			if (col.isUnique())
 				uniques.add(col);
 		return uniques;
 	}
@@ -59,7 +59,7 @@ public class TableColumnSchema extends ArrayList<TableColumn> implements ColumnS
 	public List<TableColumn> getCompositeKeys() {
 		List<TableColumn> composites = new LinkedList<>();
 		for (TableColumn col : this)
-			if (col.isCompositeKey)
+			if (col.isCompositeKey())
 				composites.add(col);
 		return composites;
 	}

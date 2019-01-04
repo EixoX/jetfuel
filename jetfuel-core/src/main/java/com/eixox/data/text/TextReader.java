@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import com.eixox.data.Filter;
 
@@ -128,14 +129,34 @@ public class TextReader<T> implements AutoCloseable, Closeable, Iterable<T>, Ite
 	/**
 	 * Returns this guy as an iterator;
 	 */
+	@SuppressWarnings("resource")
 	public Iterator<T> iterator() {
-		return this;
+
+		TextReader<T> i = this;
+
+		return new Iterator<T>() {
+			final TextReader<T> instance = i;
+
+			@Override
+			public boolean hasNext() {
+				return instance.hasNext();
+			}
+
+			@Override
+			public T next() {
+				return instance.next();
+			}
+		};
 	}
 
 	/**
 	 * Gets the next value from this iterator;
 	 */
 	public T next() {
+
+		if (this.line_number > -1 && this.current == null) {
+			throw new NoSuchElementException("This iterator has no more elements");
+		}
 		return this.current;
 	}
 

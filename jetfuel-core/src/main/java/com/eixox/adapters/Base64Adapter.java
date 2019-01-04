@@ -15,10 +15,8 @@ public class Base64Adapter extends ByteArrayAdapter {
 	 */
 	@Override
 	public String format(byte[] source) {
-		if (source == null)
+		if (source == null || source.length == 0)
 			return null;
-		else if (source.length == 0)
-			return "";
 		else {
 			byte[] data = new byte[source.length + 2];
 			System.arraycopy(source, 0, data, 0, source.length);

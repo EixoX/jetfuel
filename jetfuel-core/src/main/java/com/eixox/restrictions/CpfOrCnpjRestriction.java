@@ -23,13 +23,13 @@ public class CpfOrCnpjRestriction implements Restriction {
 			else
 				return isValid(Long.parseLong(is))
 						? new RestrictionResult(true, "")
-						: new RestrictionResult(false, "N�o � um CPF ou CNPJ v�lido.");
+						: new RestrictionResult(false, "Não é um CPF ou CNPJ válido.");
 		} else if (input instanceof Number) {
 			return isValid(((Number) input).longValue())
 					? new RestrictionResult(true, "")
-					: new RestrictionResult(false, "N�o � um CPF ou CNPJ v�lido.");
+					: new RestrictionResult(false, "Não é um CPF ou CNPJ válido.");
 		} else {
-			return new RestrictionResult(false, "N�o foi poss�vel converter para um CPF ou CNPJ.");
+			return new RestrictionResult(false, "Não foi possível converter para um CPF ou CNPJ.");
 		}
 	}
 

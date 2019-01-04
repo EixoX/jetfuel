@@ -1,10 +1,12 @@
 package com.eixox.usecases;
 
+import java.lang.System.Logger;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Map;
 
+import com.eixox.JetfuelException;
 import com.eixox.restrictions.RestrictionAspect;
 import com.eixox.restrictions.RestrictionValidation;
 
@@ -114,6 +116,16 @@ public abstract class UsecaseImplementation<T, R> {
 
 	}
 
+	private void executePostFlow(UsecaseExecution<T, R> execution) {
+		try {
+
+			postFlow(execution);
+
+		} catch (Exception e) {
+			JetfuelException.log(this, Logger.Level.DEBUG, e);
+		}
+	}
+
 	/**
 	 * Executes this usecase using a defined Usecase Execution state holder;
 	 * 
@@ -126,31 +138,15 @@ public abstract class UsecaseImplementation<T, R> {
 
 		try {
 
-			// Runs the pre-flow;
 			preFlow(execution);
 
-			// Only keeps running if the usecase has not yet been executed;
 			if (execution.result_type == UsecaseResultType.NOT_EXECUTED) {
 
-				// Runs the main flow;
 				mainFlow(execution);
-
-				try {
-
-					// Performs any post-flow;
-					postFlow(execution);
-
-					// Auto clean for removing unnecessary json serialization.
-					// Only the result actually matters;
-					if (execution.result_type == UsecaseResultType.SUCCESS) {
-						execution.params = null;
-						execution.validation = null;
-					}
-
-				} catch (Exception e) {
-					// If something happened in the post flow, nothing should be
-					// changed on the rest of the execution of the caller;
-					e.printStackTrace();
+				executePostFlow(execution);
+				if (execution.result_type == UsecaseResultType.SUCCESS) {
+					execution.params = null;
+					execution.validation = null;
 				}
 			}
 
@@ -195,7 +191,7 @@ public abstract class UsecaseImplementation<T, R> {
 	 * to do;
 	 */
 	public UsecaseResultWriter getResultWriter(R result) {
-		return null;
+		return new UsecaseResultJson(result);
 	}
 
 }

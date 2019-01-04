@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.eixox.restrictions.RestrictionValidation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * A usecase execution state holder;
@@ -58,12 +59,14 @@ public class UsecaseExecution<T, R> {
 	/**
 	 * A transient transport header map to be consumed in the usecase;
 	 */
-	public transient Map<String, Object> headers;
+	@JsonIgnore
+	public Map<String, Object> headers;
 
 	/**
 	 * The usecase instance to be executed;
 	 */
-	public transient UsecaseImplementation<T, R> usecase;
+	@JsonIgnore
+	public UsecaseImplementation<T, R> usecase;
 
 	public UsecaseExecution<T, R> setResult(R result) {
 		this.result = result;

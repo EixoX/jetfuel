@@ -43,7 +43,7 @@ public class FixedLengthAspect<T> extends TextAspect<T, FixedLengthAspectField> 
 			FixedLengthAspectField field = get(i);
 			String val = field.getFormattedValue(entity);
 			int l = Math.min(val.length(), field.end - field.start);
-			for (int j = 0; i < l; i++)
+			for (int j = 0; j < l; j++)
 				line_buffer[field.start + j] = val.charAt(j);
 		}
 

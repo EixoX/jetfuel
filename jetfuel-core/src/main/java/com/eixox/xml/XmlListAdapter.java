@@ -6,6 +6,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.eixox.JetfuelException;
+
 /**
  * An xml adapter that can read and write objects as xml child elements.
  * 
@@ -40,9 +42,9 @@ public class XmlListAdapter<T> implements XmlAdapter<List<T>> {
 	public XmlListAdapter(String xmlName, XmlAdapter<T> xmlAdapter, Class<? extends List<T>> listType) {
 
 		if (xmlAdapter == null)
-			throw new RuntimeException("The list xml adapter cannot be null");
+			throw new JetfuelException("The list xml adapter cannot be null");
 		else if (listType == null)
-			throw new RuntimeException("The list type cannot be null.");
+			throw new JetfuelException("The list type cannot be null.");
 
 		this.xmlName = xmlName;
 		this.xmlAdapter = xmlAdapter;
@@ -50,7 +52,7 @@ public class XmlListAdapter<T> implements XmlAdapter<List<T>> {
 	}
 
 	/**
-	 * Parses the child xml element nodes as a list of objects.
+	 * Parses the child XML element nodes as a list of objects.
 	 */
 	public List<T> parse(Node node) {
 		try {
@@ -63,7 +65,7 @@ public class XmlListAdapter<T> implements XmlAdapter<List<T>> {
 			return list;
 
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 

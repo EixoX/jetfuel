@@ -14,6 +14,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import com.eixox.JetfuelException;
+
 /**
  * A generic adapter for xml documents;
  * 
@@ -84,7 +86,7 @@ public class XmlDocumentAdapter extends Adapter<Document> {
 		try {
 			return builderFactory.newDocumentBuilder().parse(is);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -98,7 +100,7 @@ public class XmlDocumentAdapter extends Adapter<Document> {
 		try {
 			return builderFactory.newDocumentBuilder().parse(file);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -112,7 +114,7 @@ public class XmlDocumentAdapter extends Adapter<Document> {
 		try {
 			return builderFactory.newDocumentBuilder().parse(uri);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -126,7 +128,7 @@ public class XmlDocumentAdapter extends Adapter<Document> {
 		try {
 			return builderFactory.newDocumentBuilder().parse(is);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 

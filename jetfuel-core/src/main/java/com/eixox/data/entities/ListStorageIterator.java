@@ -1,6 +1,7 @@
 package com.eixox.data.entities;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import com.eixox.data.Filter;
 
@@ -41,7 +42,10 @@ public class ListStorageIterator<T> implements Iterator<T> {
 	}
 
 	public T next() {
-		return this.currentValue;
+		if (this.currentValue == null)
+			throw new NoSuchElementException();
+		else
+			return this.currentValue;
 	}
 
 }

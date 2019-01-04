@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.eixox.JetfuelException;
 import com.eixox.adapters.UseAdapter;
 import com.eixox.restrictions.Required;
 import com.eixox.xml.Xml;
@@ -193,7 +194,7 @@ public class RssChannel {
 			Document document = builder.parse(uri);
 			return parse(document);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 

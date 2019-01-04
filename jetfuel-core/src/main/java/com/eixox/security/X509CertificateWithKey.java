@@ -22,6 +22,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import com.eixox.JetfuelException;
+
 public class X509CertificateWithKey {
 
 	public PrivateKey privateKey;
@@ -29,10 +31,10 @@ public class X509CertificateWithKey {
 
 	public void loadPfx(String fileName, String password)
 			throws IOException,
-				NoSuchAlgorithmException,
-				CertificateException,
-				KeyStoreException,
-				UnrecoverableEntryException {
+			NoSuchAlgorithmException,
+			CertificateException,
+			KeyStoreException,
+			UnrecoverableEntryException {
 		FileInputStream fis = new FileInputStream(fileName);
 		try {
 			loadPfx(fis, password);
@@ -43,19 +45,19 @@ public class X509CertificateWithKey {
 
 	public void loadPfx(byte[] bytes, String password)
 			throws NoSuchAlgorithmException,
-				CertificateException,
-				KeyStoreException,
-				UnrecoverableEntryException,
-				IOException {
+			CertificateException,
+			KeyStoreException,
+			UnrecoverableEntryException,
+			IOException {
 		loadPfx(new ByteArrayInputStream(bytes), password);
 	}
 
 	public void loadPfx(InputStream is, String password)
 			throws NoSuchAlgorithmException,
-				CertificateException,
-				IOException,
-				KeyStoreException,
-				UnrecoverableEntryException {
+			CertificateException,
+			IOException,
+			KeyStoreException,
+			UnrecoverableEntryException {
 
 		char[] pwd = password.toCharArray();
 		KeyStore keyStore = KeyStore.getInstance("pkcs12");
@@ -72,20 +74,20 @@ public class X509CertificateWithKey {
 				return;
 			}
 		}
-		throw new RuntimeException("Certificate of type X.509 was not found.");
+		throw new JetfuelException("Certificate of type X.509 was not found.");
 
 	}
 
 	public final SSLSocketFactory createSocketFactoryForBlindlyTrustedServer()
 			throws NoSuchAlgorithmException,
-				KeyManagementException {
-		SSLContext sc = SSLContext.getInstance("TLS");
+			KeyManagementException {
+		SSLContext sc = SSLContext.getInstance("TLSv1.2");
 		sc.init(
 				new KeyManager[] {
 						new X509KeyManager(certificate, privateKey)
 				},
 				new TrustManager[] {
-						new X509TrustManager()
+						new DullX509TrustManager()
 				},
 				new SecureRandom());
 		return sc.getSocketFactory();

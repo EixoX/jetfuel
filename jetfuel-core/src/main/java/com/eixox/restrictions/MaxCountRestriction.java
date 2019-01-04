@@ -28,11 +28,12 @@ public class MaxCountRestriction implements Restriction {
 			return Array.getLength(input) <= value
 					? new RestrictionResult(true, "")
 					: new RestrictionResult(false, "O número máximo de elementos é " + this.value);
-		} else
+		} else {
 			return new RestrictionResult(false, "Não foi possível determinar a contagem de " + input.getClass());
+		}
 
 	}
-	
+
 	@Override
 	public String toString() {
 		return "MaxCount(" + this.value + ")";

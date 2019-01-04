@@ -2,6 +2,8 @@ package com.eixox.adapters;
 
 import java.util.UUID;
 
+import com.eixox.JetfuelException;
+
 public class UUIDBase36Adapter extends UUIDAdapter {
 
 	@Override
@@ -9,7 +11,7 @@ public class UUIDBase36Adapter extends UUIDAdapter {
 		if (source == null || source.isEmpty())
 			return null;
 
-		throw new RuntimeException("Not implemented");
+		throw new JetfuelException("Not implemented");
 	}
 
 	@Override

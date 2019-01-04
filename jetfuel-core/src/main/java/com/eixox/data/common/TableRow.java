@@ -1,6 +1,7 @@
 package com.eixox.data.common;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class TableRow implements Iterable<Object> {
 
@@ -17,6 +18,8 @@ public class TableRow implements Iterable<Object> {
 			public int ordinal = 0;
 
 			public Object next() {
+				if (ordinal >= cells.length)
+					throw new NoSuchElementException();
 				Object o = cells[ordinal];
 				ordinal++;
 				return o;

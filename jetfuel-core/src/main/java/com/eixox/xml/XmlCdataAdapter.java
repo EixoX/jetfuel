@@ -30,8 +30,8 @@ public class XmlCdataAdapter<T> implements XmlAdapter<T> {
 	}
 
 	/**
-	 * Parses the text content of the given node as the data type of this
-	 * component adapter;
+	 * Parses the text content of the given node as the data type of this component
+	 * adapter;
 	 */
 	public T parse(Node node) {
 
@@ -44,8 +44,7 @@ public class XmlCdataAdapter<T> implements XmlAdapter<T> {
 	}
 
 	/**
-	 * Appends the formatted CDATA text of the value as a text node to it's
-	 * parent;
+	 * Appends the formatted CDATA text of the value as a text node to it's parent;
 	 */
 	public Node format(Object value, Node parent) {
 		String txt = this.componentAdapter.formatObject(value);
@@ -54,8 +53,9 @@ public class XmlCdataAdapter<T> implements XmlAdapter<T> {
 			CDATASection section = document.createCDATASection(txt);
 			parent.appendChild(section);
 			return section;
-		} else
+		} else {
 			return null;
+		}
 	}
 
 	/**

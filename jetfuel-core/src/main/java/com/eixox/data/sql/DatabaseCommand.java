@@ -711,8 +711,8 @@ public class DatabaseCommand {
 			return appendString(value.toString());
 		if (value instanceof Character)
 			return appendString(value.toString());
-
-		throw new JetfuelException("Can't serialize to SQL: " + value.getClass());
+		else
+			throw new JetfuelException("Can't serialize to SQL: " + value.getClass());
 	}
 
 	/**

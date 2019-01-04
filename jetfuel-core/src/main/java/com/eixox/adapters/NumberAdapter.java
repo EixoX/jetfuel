@@ -7,6 +7,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Date;
 
+import com.eixox.JetfuelException;
+
 /**
  * An adapter for Number objects;
  * 
@@ -18,7 +20,7 @@ public class NumberAdapter extends Adapter<Number> {
 	/**
 	 * Gets the number format used by this adapter;
 	 */
-	public final NumberFormat format;
+	public final NumberFormat formatter;
 
 	/**
 	 * Creates a new number adapter;
@@ -27,7 +29,7 @@ public class NumberAdapter extends Adapter<Number> {
 	 */
 	public NumberAdapter(NumberFormat format) {
 		super(Number.class);
-		this.format = format;
+		this.formatter = format;
 	}
 
 	/**
@@ -56,9 +58,9 @@ public class NumberAdapter extends Adapter<Number> {
 		try {
 			return source == null || source.isEmpty()
 					? whenNull()
-					: this.format.parse(source);
+					: this.formatter.parse(source);
 		} catch (ParseException e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -69,7 +71,7 @@ public class NumberAdapter extends Adapter<Number> {
 	public String format(Number source) {
 		return source == null
 				? ""
-				: this.format.format(source);
+				: this.formatter.format(source);
 	}
 
 	/**

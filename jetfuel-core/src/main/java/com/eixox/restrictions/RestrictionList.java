@@ -5,6 +5,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
+import com.eixox.JetfuelException;
+
 public class RestrictionList extends ArrayList<Restriction> implements Restriction {
 
 	public RestrictionList() {
@@ -61,10 +63,10 @@ public class RestrictionList extends ArrayList<Restriction> implements Restricti
 						Constructor<? extends Restriction> constructor2 = implClass.getConstructor();
 						list.add(constructor2.newInstance());
 					} catch (Exception e2) {
-						throw new RuntimeException(e2);
+						throw new JetfuelException(e2);
 					}
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					throw new JetfuelException(e);
 				}
 			}
 		}

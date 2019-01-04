@@ -3,6 +3,7 @@ package com.eixox.xml;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import com.eixox.JetfuelException;
 import com.eixox.adapters.ArrayAdapter;
 import com.eixox.adapters.ListAdapter;
 import com.eixox.reflection.AspectField;
@@ -135,12 +136,12 @@ public class XmlAspectMember extends AspectField {
 			else
 				return new XmlTextAdapter(this.adapter);
 		default:
-			throw new RuntimeException("Can't create xml adapters for xml type "
-					+ annotation.type()
-					+ " on "
-					+ field
-					+ " in "
-					+ field.getDeclaringClass());
+			throw new JetfuelException("Can't create xml adapters for xml type " +
+					annotation.type() +
+					" on " +
+					field +
+					" in " +
+					field.getDeclaringClass());
 		}
 	}
 

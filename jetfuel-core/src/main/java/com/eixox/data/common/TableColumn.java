@@ -9,10 +9,10 @@ public class TableColumn implements Column {
 	public final String columnName;
 	public final int columnOrdinal;
 	public final Class<?> dataType;
-	public boolean isIdentity;
-	public boolean isUnique;
-	public boolean isCompositeKey;
-	public boolean isReadOnly;
+	private boolean isIdentity;
+	private boolean isUnique;
+	private boolean isCompositeKey;
+	private boolean isReadOnly;
 
 	protected TableColumn(Table table, String name, Class<?> dataType, int ordinal) {
 		this.table = table;
