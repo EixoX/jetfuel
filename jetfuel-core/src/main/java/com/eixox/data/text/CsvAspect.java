@@ -38,16 +38,20 @@ public class CsvAspect<T> extends TextAspect<T, CsvAspectField> {
 		}
 	}
 
+	private boolean isParseable(String lineContent) {
+		return !(this.ignore_blank_lines &&
+				lineContent.trim().isEmpty()) &&
+				!(this.ignore_comment_lines &&
+						lineContent.trim().startsWith(this.comment_qualifier));
+
+	}
+
 	public T parse(String lineContent) {
+
+		if (!isParseable(lineContent))
+			return null;
+
 		String[] cells = lineContent.split(this.separator);
-
-		// Ignore blank lines
-		if (this.ignore_blank_lines && lineContent.trim().isEmpty())
-			return null;
-
-		// Ignore comment lines
-		if (this.ignore_comment_lines && lineContent.trim().startsWith(this.comment_qualifier))
-			return null;
 
 		// Is it supposed to filter by column names
 		if (this.fieldOrdinals == null) {

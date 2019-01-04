@@ -82,4 +82,19 @@ public class TableColumnSchema extends ArrayList<TableColumn> implements ColumnS
 		return compFilter;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o) ||
+				o instanceof TableColumnSchema &&
+						this.schema_name != null &&
+						this.schema_name.equalsIgnoreCase(((TableColumnSchema) o).schema_name);
+	}
+
+	@Override
+	public int hashCode() {
+		return schema_name == null
+				? super.hashCode()
+				: schema_name.hashCode();
+	}
+
 }

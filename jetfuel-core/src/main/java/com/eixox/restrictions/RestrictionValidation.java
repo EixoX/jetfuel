@@ -210,21 +210,31 @@ public class RestrictionValidation {
 	 * @return
 	 */
 	public final boolean setChild(String message, boolean valid, String... names) {
-		RestrictionValidation rv = this;
-		for (int i = 0; i < names.length && rv != null; i++) {
-			for (RestrictionValidation child : rv.children)
-				if (child.name.equalsIgnoreCase(names[i])) {
-					rv = child;
-					break;
-				}
-			rv = null;
-		}
 
-		if (rv == null)
+		RestrictionValidation rv = getChild(names);
+		if (rv == null) {
 			return false;
+		} else {
+			rv.valid = valid;
+			rv.message = message;
+			return true;
+		}
+	}
 
-		rv.valid = valid;
-		rv.message = message;
-		return true;
+	public final RestrictionValidation getChild(String name) {
+		for (int i = 0; i < children.size(); i++)
+			if (name.equalsIgnoreCase(children.get(i).name))
+				return children.get(i);
+		return null;
+	}
+
+	public final RestrictionValidation getChild(String... names) {
+		RestrictionValidation rv = this;
+		int i = 0;
+		while (rv != null && i < names.length) {
+			rv = rv.getChild(names[i]);
+			i++;
+		}
+		return rv;
 	}
 }
