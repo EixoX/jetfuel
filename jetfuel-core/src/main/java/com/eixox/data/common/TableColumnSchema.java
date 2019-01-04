@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.eixox.JetfuelException;
 import com.eixox.data.ColumnSchema;
 import com.eixox.data.FilterExpression;
 import com.eixox.data.FilterTerm;
@@ -28,7 +29,7 @@ public class TableColumnSchema extends ArrayList<TableColumn> implements ColumnS
 	public TableColumn get(String name) {
 		int index = indexOf(name);
 		if (index < 0)
-			throw new RuntimeException(name + " not found on table " + schema_name);
+			throw new JetfuelException(name + " not found on table " + schema_name);
 		else
 			return super.get(index);
 	}
@@ -48,7 +49,7 @@ public class TableColumnSchema extends ArrayList<TableColumn> implements ColumnS
 	}
 
 	public List<TableColumn> getUniqueColumns() {
-		List<TableColumn> uniques = new LinkedList<TableColumn>();
+		List<TableColumn> uniques = new LinkedList<>();
 		for (TableColumn col : this)
 			if (col.isUnique)
 				uniques.add(col);
@@ -56,7 +57,7 @@ public class TableColumnSchema extends ArrayList<TableColumn> implements ColumnS
 	}
 
 	public List<TableColumn> getCompositeKeys() {
-		List<TableColumn> composites = new LinkedList<TableColumn>();
+		List<TableColumn> composites = new LinkedList<>();
 		for (TableColumn col : this)
 			if (col.isCompositeKey)
 				composites.add(col);

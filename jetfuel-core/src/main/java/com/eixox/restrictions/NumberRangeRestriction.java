@@ -14,8 +14,8 @@ public class NumberRangeRestriction implements Restriction {
 		this(numberRange.min(), numberRange.max());
 	}
 
-	public synchronized final RestrictionResult validate(Object input) {
-		if (input == null || !(input instanceof Number))
+	public final synchronized RestrictionResult validate(Object input) {
+		if (!(input instanceof Number))
 			return new RestrictionResult(false, "Não foi possível converter em número.");
 		else {
 			double d = ((Number) input).doubleValue();
@@ -24,7 +24,7 @@ public class NumberRangeRestriction implements Restriction {
 					: new RestrictionResult(false, "Tem que ser entre " + min + " e " + max);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "NumberRange(" + min + ", " + max + ")";

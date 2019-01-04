@@ -1,24 +1,38 @@
 package com.eixox.restrictions;
 
-public class RestrictionException extends Exception {
+import java.io.Serializable;
+
+public class RestrictionException extends Exception implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4957176309507772062L;
-	public Object source;
-	public String name;
-	public Object value;
+	private final String source;
+	private final String name;
+	private final String value;
 
 	public RestrictionException(String message) {
-		super(message);
+		this(message, null, null, null);
 	}
 
-	public RestrictionException(Object source, String name, Object value, String message) {
+	public RestrictionException(String source, String name, String value, String message) {
 		super(message);
 		this.source = source;
 		this.name = name;
 		this.value = value;
+	}
+
+	public String getSource() {
+		return this.source;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getValue() {
+		return this.value;
 	}
 
 }

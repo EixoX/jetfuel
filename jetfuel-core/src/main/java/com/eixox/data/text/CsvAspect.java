@@ -30,23 +30,23 @@ public class CsvAspect<T> extends TextAspect<T, CsvAspectField> {
 		super(dataType, dataType.getSimpleName());
 		CsvFile annotation = dataType.getAnnotation(CsvFile.class);
 		if (annotation != null) {
-			this.first_row_has_names = annotation.first_row_has_names();
+			this.first_row_has_names = annotation.firstRowHasNames();
 			this.separator = annotation.separator();
-			this.ignore_blank_lines = annotation.ignore_blank_lines();
-			this.ignore_comment_lines = annotation.ignore_comment_lines();
-			this.comment_qualifier = annotation.comment_qualifier();
+			this.ignore_blank_lines = annotation.ignoreBlankLines();
+			this.ignore_comment_lines = annotation.ignoreCommentLines();
+			this.comment_qualifier = annotation.getCommentQualifier();
 		}
 	}
 
-	public T parse(String line_content) {
-		String[] cells = line_content.split(this.separator);
+	public T parse(String lineContent) {
+		String[] cells = lineContent.split(this.separator);
 
 		// Ignore blank lines
-		if (this.ignore_blank_lines && line_content.trim().isEmpty())
+		if (this.ignore_blank_lines && lineContent.trim().isEmpty())
 			return null;
 
 		// Ignore comment lines
-		if (this.ignore_comment_lines && line_content.trim().startsWith(this.comment_qualifier))
+		if (this.ignore_comment_lines && lineContent.trim().startsWith(this.comment_qualifier))
 			return null;
 
 		// Is it supposed to filter by column names

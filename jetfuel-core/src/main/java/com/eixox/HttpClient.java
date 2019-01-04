@@ -25,15 +25,16 @@ import java.util.Map.Entry;
  */
 public class HttpClient {
 
+	private static final String CONTENT_TYPE_HEADER = "Content-Type";
+
 	private final LinkedHashMap<String, String> form = new LinkedHashMap<>();
 	private final LinkedHashMap<String, String> cookies = new LinkedHashMap<>();
 	private final LinkedHashMap<String, String> requestHeaders = new LinkedHashMap<>();
 	private final LinkedHashMap<String, String> responseHeaders = new LinkedHashMap<>();
 
-	private Date start_time;
-	private Date end_time;
+	private Date startTime;
+	private Date endTime;
 	private URL url;
-	private HttpURLConnection connection;
 	private String method = "GET";
 	private byte[] requestBody;
 	private int responseCode;
@@ -54,7 +55,7 @@ public class HttpClient {
 			this.url = new URL(address);
 			return this;
 		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -64,19 +65,20 @@ public class HttpClient {
 
 	public final HttpClient setMethod(String method) {
 		this.method = method;
-		this.requestHeaders.remove("Content-Type");
+		this.requestHeaders.remove(CONTENT_TYPE_HEADER);
 		return this;
 	}
 
 	public final HttpClient setMethod(String method, String contentType) {
-
+		this.method = method;
+		this.requestHeaders.put(CONTENT_TYPE_HEADER, contentType);
 		return this;
 	}
 
 	public final HttpClient prepareFormPost() {
 		this.requestBody = this.getFormUrlEncoded().getBytes();
 		this.method = "POST";
-		this.requestHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+		this.requestHeaders.put(CONTENT_TYPE_HEADER, "application/x-www-form-urlencoded");
 		return this;
 	}
 
@@ -118,7 +120,8 @@ public class HttpClient {
 	public final String getFormUrlEncoded(String encoding) {
 		try {
 			StringBuilder builder = new StringBuilder();
-			String key, value;
+			String key;
+			String value;
 			for (Entry<String, String> e : form.entrySet()) {
 				key = e.getKey();
 				value = e.getValue();
@@ -132,7 +135,7 @@ public class HttpClient {
 			}
 			return builder.toString();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 
@@ -141,21 +144,21 @@ public class HttpClient {
 	}
 
 	public final HttpClient setRequestBody(String contentType, byte[] data) {
-		this.requestHeaders.put("Content-Type", contentType);
+		this.requestHeaders.put(CONTENT_TYPE_HEADER, contentType);
 		this.requestBody = data;
 		return this;
 	}
 
 	public HttpClient connect() throws IOException {
-		this.start_time = new Date();
-		this.end_time = null;
-		connection = (HttpURLConnection) this.url.openConnection();
+		this.startTime = new Date();
+		this.endTime = null;
+		HttpURLConnection connection = (HttpURLConnection) this.url.openConnection();
 		connection.setRequestMethod(this.method);
 		connection.setInstanceFollowRedirects(true);
 		connection.setUseCaches(false);
 
 		for (Entry<String, String> entry : this.requestHeaders.entrySet())
-			this.connection.setRequestProperty(entry.getKey(), entry.getValue());
+			connection.setRequestProperty(entry.getKey(), entry.getValue());
 
 		if (!cookies.isEmpty()) {
 			final ArrayList<String> cks = new ArrayList<>(cookies.size());
@@ -168,9 +171,9 @@ public class HttpClient {
 		}
 
 		if (this.requestBody != null && this.requestBody.length > 0) {
-			this.connection.setRequestProperty("Content-Length", Integer.toString(requestBody.length));
-			this.connection.setDoOutput(true);
-			OutputStream outputStream = this.connection.getOutputStream();
+			connection.setRequestProperty("Content-Length", Integer.toString(requestBody.length));
+			connection.setDoOutput(true);
+			OutputStream outputStream = connection.getOutputStream();
 			outputStream.write(requestBody);
 			outputStream.flush();
 			outputStream.close();
@@ -198,8 +201,7 @@ public class HttpClient {
 
 		}
 
-		InputStream inputStream = connection.getInputStream();
-		try {
+		try (InputStream inputStream = connection.getInputStream()) {
 			byte[] buffer = new byte[4096];
 			ByteArrayOutputStream bos = new ByteArrayOutputStream(buffer.length);
 			for (int i = inputStream.read(buffer); i >= 0; i = inputStream.read(buffer)) {
@@ -207,11 +209,9 @@ public class HttpClient {
 			}
 			this.responseBytes = bos.toByteArray();
 			bos.close();
-		} finally {
-			inputStream.close();
 		}
 
-		this.end_time = new Date();
+		this.endTime = new Date();
 		return this;
 	}
 
@@ -259,15 +259,17 @@ public class HttpClient {
 	}
 
 	public final Date getStartTime() {
-		return this.start_time;
+		return this.startTime;
 	}
 
 	public final Date getEndTime() {
-		return this.end_time;
+		return this.endTime;
 	}
 
 	private String getHtmlAttribute(String attName, String htmlText) {
-		int apos, eqpos, fpos;
+		int apos;
+		int eqpos;
+		int fpos;
 
 		apos = htmlText.indexOf(attName);
 		if (apos < 0)

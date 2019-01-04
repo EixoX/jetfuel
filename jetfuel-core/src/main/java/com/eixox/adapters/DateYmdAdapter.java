@@ -121,16 +121,16 @@ public class DateYmdAdapter extends DateAdapter {
 		cal.setTime(source);
 
 		int y = cal.get(Calendar.YEAR);
-		int M = cal.get(Calendar.MONTH) + 1;
+		int mo = cal.get(Calendar.MONTH) + 1;
 		int d = cal.get(Calendar.DATE);
 		int h = cal.get(Calendar.HOUR_OF_DAY);
 		int m = cal.get(Calendar.MINUTE);
 		int s = cal.get(Calendar.SECOND);
 
 		String p1 = Integer.toString(y) +
-				(M < 10
-						? "0" + Integer.toString(M)
-						: Integer.toString(M)) +
+				(mo < 10
+						? "0" + Integer.toString(mo)
+						: Integer.toString(mo)) +
 				(d < 10
 						? "0" + Integer.toString(d)
 						: Integer.toString(d));

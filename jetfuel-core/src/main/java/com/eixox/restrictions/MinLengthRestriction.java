@@ -8,11 +8,11 @@ public class MinLengthRestriction implements Restriction {
 		this.value = value;
 	}
 
-	public MinLengthRestriction(MinLength MinLength) {
-		this(MinLength.value());
+	public MinLengthRestriction(MinLength minLength) {
+		this(minLength.value());
 	}
 
-	public synchronized final RestrictionResult validate(Object input) {
+	public final synchronized RestrictionResult validate(Object input) {
 		if (input == null)
 			return new RestrictionResult(true, "");
 		else

@@ -69,4 +69,22 @@ public class DataColumnSchema<T extends Column> extends ArrayList<T> implements 
 		return exp;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o == null)
+			return false;
+		else if (o.equals(this))
+			return true;
+		else
+			return o instanceof DataColumnSchema &&
+					this.schema_name != null &&
+					this.schema_name.equalsIgnoreCase(((DataColumnSchema<?>) o).schema_name);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.schema_name != null
+				? this.schema_name.hashCode()
+				: super.hashCode();
+	}
 }

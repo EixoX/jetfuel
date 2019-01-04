@@ -13,12 +13,12 @@ public class PairList<T, G> extends ArrayList<Pair<T, G>> {
 		super(capacity);
 	}
 
-	public synchronized final PairList<T, G> add(T key, G label) {
+	public final synchronized PairList<T, G> add(T key, G label) {
 		this.add(new Pair<T, G>(key, label));
 		return this;
 	}
 
-	public synchronized final int indexOfKey(Object key) {
+	public final synchronized int indexOfKey(Object key) {
 		int s = size();
 		for (int i = 0; i < s; i++)
 			if (key.equals(get(i).key))
@@ -26,7 +26,7 @@ public class PairList<T, G> extends ArrayList<Pair<T, G>> {
 		return -1;
 	}
 
-	public synchronized final G getLabel(Object key) {
+	public final synchronized G getLabel(Object key) {
 		int ordinal = indexOfKey(key);
 		return ordinal >= 0
 				? get(ordinal).label

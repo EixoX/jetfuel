@@ -24,9 +24,9 @@ public class DoubleAdapter extends Adapter<Double> {
 	 */
 	@Override
 	public Double parse(String source) {
-		return source == null || source.isEmpty() ?
-				whenNull() :
-				Double.valueOf(source);
+		return source == null || source.isEmpty()
+				? whenNull()
+				: Double.valueOf(source);
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class DoubleAdapter extends Adapter<Double> {
 	@Override
 	protected Double changeType(Class<?> sourceClass, Object source) {
 		if (Number.class.isAssignableFrom(sourceClass))
-			return (double) ((Number) source).doubleValue();
+			return ((Number) source).doubleValue();
 		else if (Date.class.isAssignableFrom(sourceClass))
 			return (double) ((Date) source).getTime();
 		else if (java.sql.Date.class.isAssignableFrom(sourceClass))

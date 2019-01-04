@@ -7,6 +7,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import com.eixox.JetfuelException;
+
 /**
  * A generic date adapter that can read and write date strings.
  * 
@@ -18,11 +20,10 @@ public class DateAdapter extends Adapter<Date> {
 	/**
 	 * The date format to use for parsing and formatting dates.
 	 */
-	public final DateFormat format;
+	public final DateFormat formatter;
 
 	/**
-	 * Creates a new date adapter with the default date and time format
-	 * instance.
+	 * Creates a new date adapter with the default date and time format instance.
 	 */
 	public DateAdapter() {
 		this(DateFormat.getDateTimeInstance());
@@ -35,7 +36,7 @@ public class DateAdapter extends Adapter<Date> {
 	 */
 	public DateAdapter(DateFormat format) {
 		super(Date.class);
-		this.format = format;
+		this.formatter = format;
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class DateAdapter extends Adapter<Date> {
 	public DateAdapter(UseAdapter options) {
 		super(Date.class);
 		Locale locale = Locale.forLanguageTag(options.language());
-		this.format = options.format().isEmpty()
+		this.formatter = options.format().isEmpty()
 				? DateFormat.getDateTimeInstance()
 				: new SimpleDateFormat(options.format(), locale);
 	}
@@ -67,21 +68,20 @@ public class DateAdapter extends Adapter<Date> {
 	public String format(Date source) {
 		return source == null
 				? ""
-				: this.format.format(source);
+				: this.formatter.format(source);
 	}
 
 	/**
-	 * Parses the date object from the provided string using this instance's
-	 * format.
+	 * Parses the date object from the provided string using this instance's format.
 	 */
 	@Override
 	public Date parse(String source) {
 		try {
 			return source == null || source.isEmpty()
 					? null
-					: this.format.parse(source);
+					: this.formatter.parse(source);
 		} catch (ParseException e) {
-			throw new RuntimeException(e);
+			throw new JetfuelException(e);
 		}
 	}
 

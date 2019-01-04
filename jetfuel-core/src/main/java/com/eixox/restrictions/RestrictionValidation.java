@@ -35,7 +35,7 @@ public class RestrictionValidation {
 	/**
 	 * A list of children that also suffered validation.
 	 */
-	public final LinkedList<RestrictionValidation> children = new LinkedList<RestrictionValidation>();
+	public final List<RestrictionValidation> children = new LinkedList<>();
 
 	/**
 	 * Updates the "valid" boolean from the state of the children;
@@ -101,11 +101,9 @@ public class RestrictionValidation {
 		final RestrictionValidation childValidation = new RestrictionValidation(field.name, field.restrictions, value);
 		this.children.add(childValidation);
 		if (value != null) {
-			ListAdapter<?> list_adapter = (ListAdapter<?>) field.adapter;
-			if (list_adapter.componentAdapter == null) // only makes sense for
-														// crafted components;
-			{
-				RestrictionAspect<?> componentAspect = RestrictionAspect.getInstance(list_adapter.componentType);
+			ListAdapter<?> listAdapter = (ListAdapter<?>) field.adapter;
+			if (listAdapter.componentAdapter == null) {
+				RestrictionAspect<?> componentAspect = RestrictionAspect.getInstance(listAdapter.componentType);
 				for (Object listItem : ((List<?>) value))
 					childValidation.children.add(new RestrictionValidation(componentAspect, listItem));
 				childValidation.updateValidFromChildren();
@@ -114,8 +112,7 @@ public class RestrictionValidation {
 	}
 
 	/**
-	 * Adds the overall array validation and validates every element on the
-	 * array;
+	 * Adds the overall array validation and validates every element on the array;
 	 * 
 	 * @param field
 	 * @param value
@@ -124,11 +121,9 @@ public class RestrictionValidation {
 		final RestrictionValidation childValidation = new RestrictionValidation(field.name, field.restrictions, value);
 		this.children.add(childValidation);
 		if (value != null) {
-			ArrayAdapter<?> array_adapter = (ArrayAdapter<?>) field.adapter;
-			if (array_adapter.componentAdapter == null) // only makes sense for
-														// crafted components;
-			{
-				RestrictionAspect<?> componentAspect = RestrictionAspect.getInstance(array_adapter.componentType);
+			ArrayAdapter<?> arrayAdapter = (ArrayAdapter<?>) field.adapter;
+			if (arrayAdapter.componentAdapter == null) {
+				RestrictionAspect<?> componentAspect = RestrictionAspect.getInstance(arrayAdapter.componentType);
 				int l = Array.getLength(value);
 				for (int i = 0; i < l; i++)
 					childValidation.children.add(new RestrictionValidation(componentAspect, Array.get(value, i)));
@@ -153,8 +148,8 @@ public class RestrictionValidation {
 	}
 
 	/**
-	 * Creates a new instance of the restriction validation object using a
-	 * complex entity as source;
+	 * Creates a new instance of the restriction validation object using a complex
+	 * entity as source;
 	 * 
 	 * @param value
 	 */
@@ -163,8 +158,8 @@ public class RestrictionValidation {
 	}
 
 	/**
-	 * Creates a new instance of the restriction validation object using a
-	 * complex entity as source;
+	 * Creates a new instance of the restriction validation object using a complex
+	 * entity as source;
 	 * 
 	 * @param aspect
 	 * @param entity

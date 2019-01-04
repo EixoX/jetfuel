@@ -40,12 +40,4 @@ public class BooleanAdapter extends Adapter<Boolean> {
 			return super.changeType(sourceClass, source);
 	}
 
-	/**
-	 * Gets the value of a Boolean when the input for conversion is null;
-	 */
-	@Override
-	public Boolean whenNull() {
-		return null;
-	}
-
 }

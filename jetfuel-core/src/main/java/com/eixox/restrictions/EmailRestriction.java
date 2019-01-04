@@ -19,16 +19,18 @@ public class EmailRestriction implements Restriction {
 		return email != null && !email.isEmpty() && rfc2822.matcher(email).matches();
 	}
 
-	public synchronized final RestrictionResult validate(Object input) {
+	public final synchronized RestrictionResult validate(Object input) {
 
 		String s = input == null
 				? ""
 				: input.toString();
-		return s.isEmpty()
-				? new RestrictionResult(true, "")
-				: rfc2822.matcher(s).matches()
-						? new RestrictionResult(true, "")
-						: new RestrictionResult(false, "Não é um e-mail válido.");
+		if (s.isEmpty())
+			return new RestrictionResult(true, "");
+		else {
+			return rfc2822.matcher(s).matches()
+					? new RestrictionResult(true, "")
+					: new RestrictionResult(false, "Não é um e-mail válido.");
+		}
 	}
 
 	@Override

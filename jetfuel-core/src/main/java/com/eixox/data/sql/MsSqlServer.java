@@ -43,7 +43,6 @@ public class MsSqlServer extends Database {
 	public DatabaseCommand createCommand() {
 		return new MsSqlServerCommand(this);
 	}
-	
 
 	@Override
 	public DatabaseSchema readSchema() {
@@ -81,28 +80,26 @@ public class MsSqlServer extends Database {
 
 			public DatabaseSchema process(ResultSet rs) throws SQLException {
 
-				DatabaseSchema db_schema = new DatabaseSchema(rs.getString("db_name"));
+				DatabaseSchema dbSchema = new DatabaseSchema(rs.getString("db_name"));
 
 				while (rs.next()) {
 					String tableName = rs.getString("table_name");
-					DatabaseSchemaTable tb_schema = db_schema.get(tableName);
-					if (tb_schema == null) {
-
-						tb_schema = new DatabaseSchemaTable(tableName);
-						db_schema.members.add(tb_schema);
+					DatabaseSchemaTable tableSchema = dbSchema.get(tableName);
+					if (tableSchema == null) {
+						tableSchema = new DatabaseSchemaTable(tableName);
+						dbSchema.members.add(tableSchema);
 					}
-
-					DatabaseSchemaColumn col_schema = new DatabaseSchemaColumn(rs.getString("column_name"));
-					col_schema.column_ordinal = rs.getInt("column_ordinal");
-					col_schema.is_identity = rs.getBoolean("is_identity");
-					col_schema.is_nullable = rs.getBoolean("is_nullable");
-					col_schema.max_length = rs.getInt("max_length");
-					col_schema.precision = rs.getInt("precision");
-					col_schema.scale = rs.getInt("scale");
-					tb_schema.members.add(col_schema);
+					DatabaseSchemaColumn colSchema = new DatabaseSchemaColumn(rs.getString("column_name"));
+					colSchema.column_ordinal = rs.getInt("column_ordinal");
+					colSchema.is_identity = rs.getBoolean("is_identity");
+					colSchema.is_nullable = rs.getBoolean("is_nullable");
+					colSchema.max_length = rs.getInt("max_length");
+					colSchema.precision = rs.getInt("precision");
+					colSchema.scale = rs.getInt("scale");
+					tableSchema.members.add(colSchema);
 				}
 
-				return db_schema;
+				return dbSchema;
 			}
 		});
 

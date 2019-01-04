@@ -18,7 +18,7 @@ public class ListUpdate<T> extends DataUpdate {
 	public long execute() {
 
 		long counter = 0;
-		ListStorageIterator<T> iterator = new ListStorageIterator<T>(storage, filter, 0, 0);
+		ListStorageIterator<T> iterator = new ListStorageIterator<>(storage, filter, 0, 0);
 		while (iterator.hasNext()) {
 			T record = iterator.next();
 			for (Entry<Column, Object> entry : values.entrySet())

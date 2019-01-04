@@ -16,10 +16,10 @@ public interface TextSchema<T, G extends Column> extends ColumnSchema<G> {
 	/**
 	 * Parses the input content;
 	 * 
-	 * @param line_content
+	 * @param lineContent
 	 * @return
 	 */
-	public T parse(String line_content);
+	public T parse(String lineContent);
 
 	/**
 	 * Formats the entity as a string;

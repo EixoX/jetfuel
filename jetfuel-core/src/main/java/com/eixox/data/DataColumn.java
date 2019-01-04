@@ -13,16 +13,22 @@ public class DataColumn implements Column {
 	public final boolean is_composite_key;
 	public final boolean is_readonly;
 
-	public DataColumn(ColumnSchema<? extends DataColumn> schema, Adapter<?> adapter, String column_name, boolean is_identity, boolean is_unique,
-			boolean is_composite_key, boolean is_readonly) {
+	public DataColumn(
+			ColumnSchema<? extends DataColumn> schema,
+			Adapter<?> adapter,
+			String columnName,
+			boolean isIdentity,
+			boolean isUnique,
+			boolean isCompositeKey,
+			boolean isReadOnly) {
 		this.schema = schema;
 		this.adapter = adapter;
-		this.column_name = column_name;
+		this.column_name = columnName;
 		this.column_index = schema.size();
-		this.is_identity = is_identity;
-		this.is_unique = is_unique;
-		this.is_composite_key = is_composite_key;
-		this.is_readonly = is_readonly;
+		this.is_identity = isIdentity;
+		this.is_unique = isUnique;
+		this.is_composite_key = isCompositeKey;
+		this.is_readonly = isReadOnly;
 	}
 
 	public String getColumnName() {
@@ -57,15 +63,15 @@ public class DataColumn implements Column {
 		return this.schema;
 	}
 
-	public Object getValue(Object source_row) {
-		Object[] rowarr = (Object[]) source_row;
+	public Object getValue(Object sourceRow) {
+		Object[] rowarr = (Object[]) sourceRow;
 		return rowarr.length <= column_index
 				? null
 				: rowarr[column_index];
 	}
 
-	public void setValue(Object target_row, Object value) {
-		((Object[]) target_row)[column_index] = value;
+	public void setValue(Object targetRow, Object value) {
+		((Object[]) targetRow)[column_index] = value;
 	}
 
 }

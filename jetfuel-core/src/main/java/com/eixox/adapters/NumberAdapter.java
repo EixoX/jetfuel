@@ -42,7 +42,7 @@ public class NumberAdapter extends Adapter<Number> {
 	/**
 	 * Creates a new number adapter;
 	 * 
-	 * @param format
+	 * @param formatter
 	 */
 	public NumberAdapter() {
 		this(NumberFormat.getNumberInstance());

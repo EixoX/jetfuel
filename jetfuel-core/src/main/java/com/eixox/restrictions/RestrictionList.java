@@ -27,7 +27,7 @@ public class RestrictionList extends ArrayList<Restriction> implements Restricti
 			RestrictionResult res = null;
 			for (Restriction r : this) {
 				res = r.validate(input);
-				if (res.isValid == false)
+				if (!res.isValid)
 					return res;
 			}
 			return res;

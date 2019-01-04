@@ -10,10 +10,10 @@ import com.eixox.restrictions.RestrictionValidation;
  * 
  * @author Rodrigo Portela
  *
- * @param <TParams>
- * @param <TResult>
+ * @param <T>
+ * @param <R>
  */
-public class UsecaseExecution<TParams, TResult> {
+public class UsecaseExecution<T, R> {
 
 	/**
 	 * Holds the name of the usecase;
@@ -38,12 +38,12 @@ public class UsecaseExecution<TParams, TResult> {
 	/**
 	 * The result of the execution;
 	 */
-	public TResult result;
+	public R result;
 
 	/**
 	 * Gets or set the parameters of the execution;
 	 */
-	public TParams params;
+	public T params;
 
 	/**
 	 * Gets or sets the result of the validation of the execution;
@@ -63,15 +63,15 @@ public class UsecaseExecution<TParams, TResult> {
 	/**
 	 * The usecase instance to be executed;
 	 */
-	public transient UsecaseImplementation<TParams, TResult> usecase;
+	public transient UsecaseImplementation<T, R> usecase;
 
-	public UsecaseExecution<TParams, TResult> setResult(TResult result) {
+	public UsecaseExecution<T, R> setResult(R result) {
 		this.result = result;
 		return this;
 	}
 
-	public UsecaseExecution<TParams, TResult> setResultType(UsecaseResultType result_type) {
-		this.result_type = result_type;
+	public UsecaseExecution<T, R> setResultType(UsecaseResultType resultType) {
+		this.result_type = resultType;
 		return this;
 	}
 

@@ -1,6 +1,7 @@
 package com.eixox.data.common;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.eixox.data.ColumnSchema;
 import com.eixox.data.DataDelete;
@@ -17,7 +18,7 @@ import com.eixox.data.DataUpdate;
 public class Table extends DataStorage<TableRow> {
 
 	public final TableColumnSchema schema;
-	public final ArrayList<TableRow> rows = new ArrayList<TableRow>();
+	public final List<TableRow> rows = new ArrayList<>();
 
 	/**
 	 * Instantiates a new table;

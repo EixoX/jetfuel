@@ -5,7 +5,10 @@ import java.util.Date;
 
 public class Dates {
 
-	public static synchronized final Date addYmd(Date date, int years, int months, int days) {
+	private Dates() {
+	}
+
+	public static final synchronized Date addYmd(Date date, int years, int months, int days) {
 		final Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		if (years != 0) {

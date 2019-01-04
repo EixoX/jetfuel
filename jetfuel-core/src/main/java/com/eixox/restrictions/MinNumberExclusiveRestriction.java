@@ -10,11 +10,11 @@ public class MinNumberExclusiveRestriction implements Restriction {
 		this.message = message;
 	}
 
-	public MinNumberExclusiveRestriction(MinNumberExclusive MinNumberExclusive) {
-		this(MinNumberExclusive.value(), MinNumberExclusive.message());
+	public MinNumberExclusiveRestriction(MinNumberExclusive minNumberExclusive) {
+		this(minNumberExclusive.value(), minNumberExclusive.message());
 	}
 
-	public synchronized final RestrictionResult validate(Object input) {
+	public final synchronized RestrictionResult validate(Object input) {
 
 		double d = input == null
 				? 0.0

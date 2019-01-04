@@ -27,27 +27,27 @@ public @interface CsvFile {
 	 * 
 	 * @return
 	 */
-	public boolean first_row_has_names() default false;
+	public boolean firstRowHasNames() default false;
 
 	/**
 	 * Tells that comment lines should be ignored (defaults to TRUE);
 	 * 
 	 * @return
 	 */
-	public boolean ignore_comment_lines() default true;
+	public boolean ignoreCommentLines() default true;
 
 	/**
 	 * States that blank lines should be ignored (defaults to TRUE);
 	 * 
 	 * @return
 	 */
-	public boolean ignore_blank_lines() default true;
+	public boolean ignoreBlankLines() default true;
 
 	/**
 	 * Tells the comment qualifiers for commented lines (defaults to '#');
 	 * 
 	 * @return
 	 */
-	public String comment_qualifier() default "#";
+	public String getCommentQualifier() default "#";
 
 }

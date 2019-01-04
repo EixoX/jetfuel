@@ -13,10 +13,10 @@ import com.eixox.restrictions.RestrictionValidation;
  * 
  * @author Rodrigo Portela
  *
- * @param <TParams>
- * @param <TResult>
+ * @param <T>
+ * @param <R>
  */
-public abstract class UsecaseImplementation<TParams, TResult> {
+public abstract class UsecaseImplementation<T, R> {
 
 	private Type getActualTypeArguments(int ordinal) {
 		Class<?> claz = getClass();
@@ -37,11 +37,11 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Class<TParams> getParamsClass() {
+	public Class<T> getParamsClass() {
 		Type tp = getActualTypeArguments(0);
 		if (tp instanceof ParameterizedType)
 			tp = ((ParameterizedType) tp).getRawType();
-		return (Class<TParams>) tp;
+		return (Class<T>) tp;
 	}
 
 	/**
@@ -55,11 +55,11 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Class<TResult> getResultClass() {
+	public Class<R> getResultClass() {
 		Type tp = getActualTypeArguments(1);
 		if (tp instanceof ParameterizedType)
 			tp = ((ParameterizedType) tp).getRawType();
-		return (Class<TResult>) tp;
+		return (Class<R>) tp;
 	}
 
 	/**
@@ -68,7 +68,7 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	 * @param params
 	 * @return
 	 */
-	protected abstract void mainFlow(UsecaseExecution<TParams, TResult> execution) throws Exception;
+	protected abstract void mainFlow(UsecaseExecution<T, R> execution) throws Exception;
 
 	/**
 	 * Executes any pre-flow instructions like parameter validation and
@@ -76,9 +76,9 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	 * 
 	 * @param execution
 	 */
-	protected void preFlow(UsecaseExecution<TParams, TResult> execution) throws Exception {
+	protected void preFlow(UsecaseExecution<T, R> execution) {
 
-		Class<TParams> paramsClass = getParamsClass();
+		Class<T> paramsClass = getParamsClass();
 		if (!Void.class.equals(paramsClass)) {
 			try {
 
@@ -89,19 +89,18 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 					return;
 				}
 
-				RestrictionAspect<TParams> params_aspect = RestrictionAspect.getInstance(paramsClass);
+				RestrictionAspect<T> paramsAspect = RestrictionAspect.getInstance(paramsClass);
 
 				execution.validation = new RestrictionValidation(
-						params_aspect,
+						paramsAspect,
 						execution.params);
 
-				if (execution.validation.valid == false)
+				if (!execution.validation.valid)
 					execution.result_type = UsecaseResultType.VALIDATION_FAILED;
 
 			} catch (Exception e) {
 				execution.validation = new RestrictionValidation("params", false, e.getMessage());
 				execution.result_type = UsecaseResultType.VALIDATION_FAILED;
-				return;
 			}
 		}
 	}
@@ -111,7 +110,7 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	 * 
 	 * @param execution
 	 */
-	protected void postFlow(UsecaseExecution<TParams, TResult> execution) throws Exception {
+	protected void postFlow(UsecaseExecution<T, R> execution) throws Exception {
 
 	}
 
@@ -120,7 +119,7 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	 * 
 	 * @param execution
 	 */
-	private final void execute(UsecaseExecution<TParams, TResult> execution) {
+	private final void execute(UsecaseExecution<T, R> execution) {
 
 		execution.execution_start = new Date();
 		execution.result_type = UsecaseResultType.NOT_EXECUTED;
@@ -170,8 +169,8 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	 * @param params
 	 * @return
 	 */
-	public final UsecaseExecution<TParams, TResult> execute(TParams params, Map<String, Object> headers) {
-		UsecaseExecution<TParams, TResult> execution = new UsecaseExecution<>();
+	public final UsecaseExecution<T, R> execute(T params, Map<String, Object> headers) {
+		UsecaseExecution<T, R> execution = new UsecaseExecution<>();
 		execution.usecase = this;
 		execution.name = getClass().toString();
 		execution.params = params;
@@ -186,7 +185,7 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	 * @param params
 	 * @return
 	 */
-	public final UsecaseExecution<TParams, TResult> execute(TParams params) {
+	public final UsecaseExecution<T, R> execute(T params) {
 		return execute(params, null);
 	}
 
@@ -195,7 +194,7 @@ public abstract class UsecaseImplementation<TParams, TResult> {
 	 * The default implementation returns null and the executioner must decide what
 	 * to do;
 	 */
-	public UsecaseResultWriter getResultWriter(TResult result) {
+	public UsecaseResultWriter getResultWriter(R result) {
 		return null;
 	}
 

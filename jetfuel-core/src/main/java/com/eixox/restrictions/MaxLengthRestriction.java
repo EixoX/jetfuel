@@ -12,7 +12,7 @@ public class MaxLengthRestriction implements Restriction {
 		this(maxLength.value());
 	}
 
-	public synchronized final RestrictionResult validate(Object input) {
+	public final synchronized RestrictionResult validate(Object input) {
 		if (input == null)
 			return new RestrictionResult(true, "");
 		else

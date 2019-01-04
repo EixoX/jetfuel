@@ -24,11 +24,11 @@ public class FixedLengthAspect<T> extends TextAspect<T, FixedLengthAspectField> 
 				: new FixedLengthAspectField(this, field, fl);
 	}
 
-	public T parse(String line_content) {
+	public T parse(String lineContent) {
 		T item = newInstance();
 		for (int i = 0; i < size(); i++) {
 			FixedLengthAspectField field = get(i);
-			String subs = line_content.substring(field.start, field.end);
+			String subs = lineContent.substring(field.start, field.end);
 			subs = subs.trim();
 			field.setValue(item, subs);
 		}

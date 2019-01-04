@@ -8,12 +8,12 @@ public class MinNumberInclusiveRestriction implements Restriction {
 		this.value = value;
 	}
 
-	public MinNumberInclusiveRestriction(MinNumberInclusive MinNumberInclusive) {
-		this(MinNumberInclusive.value());
+	public MinNumberInclusiveRestriction(MinNumberInclusive minNumberInclusive) {
+		this(minNumberInclusive.value());
 	}
 
 	public final RestrictionResult validate(Object input) {
-		if (input == null || !(input instanceof Number))
+		if (!(input instanceof Number))
 			return new RestrictionResult(false, "Não foi possível converter em número.");
 		else
 			return ((Number) input).doubleValue() >= value

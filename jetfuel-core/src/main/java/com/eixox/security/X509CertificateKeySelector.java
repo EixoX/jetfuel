@@ -8,6 +8,7 @@ import javax.xml.crypto.KeySelector;
 import javax.xml.crypto.KeySelectorException;
 import javax.xml.crypto.KeySelectorResult;
 import javax.xml.crypto.XMLCryptoContext;
+import javax.xml.crypto.XMLStructure;
 import javax.xml.crypto.dsig.keyinfo.KeyInfo;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 
@@ -17,12 +18,13 @@ public class X509CertificateKeySelector extends KeySelector {
 	public KeySelectorResult select(KeyInfo keyInfo, Purpose purpose, AlgorithmMethod method, XMLCryptoContext context)
 			throws KeySelectorException {
 
-		for (Object o : keyInfo.getContent()) {
+		for (XMLStructure o : keyInfo.getContent()) {
 			if (o instanceof X509Data) {
 				for (Object o2 : ((X509Data) o).getContent()) {
 					if (o2 instanceof X509Certificate) {
-						final X509Certificate cert = (X509Certificate) o2;
 						return new KeySelectorResult() {
+							private final X509Certificate cert = (X509Certificate) o2;
+
 							public Key getKey() {
 								return cert.getPublicKey();
 							}

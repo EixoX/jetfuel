@@ -1,7 +1,7 @@
 package com.eixox.xml.rss;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.eixox.adapters.UseAdapter;
 import com.eixox.xml.Xml;
@@ -18,7 +18,8 @@ import com.eixox.xml.Xml;
  * @author Rodrigo Portela
  *
  */
-@Xml(name = "item")
+@Xml(
+		name = "item")
 public class RssItem {
 
 	/**
@@ -50,8 +51,9 @@ public class RssItem {
 	/**
 	 * Includes the item in one or more categories.
 	 */
-	@Xml(name = "category")
-	public ArrayList<String> categories;
+	@Xml(
+			name = "category")
+	public List<String> categories;
 
 	/**
 	 * URL of a page for comments relating to the item. Ex:
@@ -71,7 +73,9 @@ public class RssItem {
 	 * Indicates when the item was published. Ex: Sun, 19 May 2002 15:21:36 GMT
 	 */
 	@Xml
-	@UseAdapter(format = "EEE, dd MMM yyyy HH:mm:ss Z", value = com.eixox.adapters.DateAdapter.class)
+	@UseAdapter(
+			format = "EEE, dd MMM yyyy HH:mm:ss Z",
+			value = com.eixox.adapters.DateAdapter.class)
 	public Date pubDate;
 
 	/**
@@ -83,14 +87,14 @@ public class RssItem {
 	/**
 	 * <enclosure> is an optional sub-element of <item>.
 	 * 
-	 * It has three required attributes. url says where the enclosure is
-	 * located, length says how big it is in bytes, and type says what its type
-	 * is, a standard MIME type.
+	 * It has three required attributes. url says where the enclosure is located,
+	 * length says how big it is in bytes, and type says what its type is, a
+	 * standard MIME type.
 	 * 
 	 * The url must be an http url.
 	 * 
-	 * <enclosure url="http://www.scripting.com/mp3s/weatherReportSuite.mp3"
-	 * length="12216320" type="audio/mpeg" />
+	 * <enclosure url="http://www.scripting.com/mp3s/weatherReportSuite.mp3" length=
+	 * "12216320" type="audio/mpeg" />
 	 */
 	@Xml
 	public RssEnclosure enclosure;

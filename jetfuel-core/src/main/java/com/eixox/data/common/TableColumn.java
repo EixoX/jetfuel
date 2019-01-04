@@ -66,12 +66,12 @@ public class TableColumn implements Column {
 		return this.columnOrdinal;
 	}
 
-	public Object getValue(Object source_row) {
-		return ((TableRow) source_row).getValue(this.columnOrdinal);
+	public Object getValue(Object sourceRow) {
+		return ((TableRow) sourceRow).getValue(this.columnOrdinal);
 	}
 
-	public void setValue(Object target_row, Object value) {
-		((TableRow) target_row).cells[this.columnOrdinal] = value;
+	public void setValue(Object targetRow, Object value) {
+		((TableRow) targetRow).cells[this.columnOrdinal] = value;
 
 	}
 

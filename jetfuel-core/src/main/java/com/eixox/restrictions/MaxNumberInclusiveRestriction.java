@@ -12,8 +12,8 @@ public class MaxNumberInclusiveRestriction implements Restriction {
 		this(maxNumberInclusive.value());
 	}
 
-	public synchronized final RestrictionResult validate(Object input) {
-		if (input == null || !(input instanceof Number))
+	public final synchronized RestrictionResult validate(Object input) {
+		if (!(input instanceof Number))
 			return new RestrictionResult(false, "Não foi possível converter em número.");
 		else
 			return ((Number) input).doubleValue() <= value

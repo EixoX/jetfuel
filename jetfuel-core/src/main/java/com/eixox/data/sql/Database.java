@@ -163,7 +163,6 @@ public abstract class Database {
 	/**
 	 * Finalizes this database recycling any connections still on the pool;
 	 */
-	@Override
 	protected void finalize() throws Throwable {
 		recycleConnections();
 	}

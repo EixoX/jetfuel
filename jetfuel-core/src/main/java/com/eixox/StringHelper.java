@@ -12,13 +12,11 @@ public final class StringHelper {
 		return false;
 	}
 
-	public static final boolean IsNullOrEmpty(Object obj) {
-		return obj == null
-				? true
-				: ((String) obj).isEmpty();
+	public static final boolean isNullOrEmpty(Object obj) {
+		return obj == null || ((String) obj).isEmpty();
 	}
 
-	public static final boolean IsNullOrEmpty(String str) {
+	public static final boolean isNullOrEmpty(String str) {
 		return str == null || str.isEmpty();
 	}
 

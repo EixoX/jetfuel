@@ -28,10 +28,10 @@ import com.eixox.xml.XmlAspect;
  * 
  * @author Rodrigo Portela
  *
- * @param <TParams>
- * @param <TResult>
+ * @param <T>
+ * @param <R>
  */
-public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementation<TParams, TResult> {
+public abstract class SoapUsecase<T, R> extends UsecaseImplementation<T, R> {
 
 	public static final DocumentBuilderFactory BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	public static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
@@ -95,7 +95,7 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 	 * @param soapHeader
 	 * @param execution
 	 */
-	protected void processResponseHeader(Element soapHeader, UsecaseExecution<TParams, TResult> execution) {
+	protected void processResponseHeader(Element soapHeader, UsecaseExecution<T, R> execution) {
 
 	}
 
@@ -107,8 +107,8 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	protected void processResponseBody(Element soapBody, UsecaseExecution<TParams, TResult> execution) {
-		XmlAspect<TResult> xmlAspect = XmlAspect.getInstance(getResultClass());
+	protected void processResponseBody(Element soapBody, UsecaseExecution<T, R> execution) {
+		XmlAspect<R> xmlAspect = XmlAspect.getInstance(getResultClass());
 
 		NodeList resultList = soapBody.getElementsByTagName(xmlAspect.xmlName);
 		if (resultList != null && resultList.getLength() > 0) {
@@ -121,7 +121,7 @@ public abstract class SoapUsecase<TParams, TResult> extends UsecaseImplementatio
 	 * Executes the main flow of the soap usecase;
 	 */
 	@Override
-	protected void mainFlow(UsecaseExecution<TParams, TResult> execution) throws Exception {
+	protected void mainFlow(UsecaseExecution<T, R> execution) throws Exception {
 
 		URL url = getUrl();
 
