@@ -191,7 +191,8 @@ public abstract class UsecaseImplementation<T, R> {
 	 * to do;
 	 */
 	public UsecaseResultWriter getResultWriter(R result) {
-		return new UsecaseResultJson(result);
+		// return new UsecaseResultJson(result)
+		return null;
 	}
 
 }
